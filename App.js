@@ -9,22 +9,23 @@ import MainAppNavigation from './src/components/MainAppNavigation/main-app-navig
 
 
 import Test from './Test'
+import { StatusBar } from 'react-native';
 
 
 export default function App()  {
   return (
-    // <NavigationContainer>
-    //   <Provider store={store}>
-    //     <PersistGate persistor={persistor} loading={null}>
-
-    //       <MainAppNavigation/>
+    <NavigationContainer>
+      <Provider store={store}>
+        <PersistGate persistor={persistor} loading={null}>
+          <StatusBar></StatusBar>
+          <MainAppNavigation/>
           
-    //     </PersistGate>
-    //   </Provider>
-    // </NavigationContainer>
+        </PersistGate>
+      </Provider>
+    </NavigationContainer>
 
-    <Test>
+    // <Test>
 
-    </Test>
+    // </Test>
   );
 }

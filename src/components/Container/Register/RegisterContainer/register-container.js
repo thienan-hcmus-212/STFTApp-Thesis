@@ -5,8 +5,7 @@ import { actionsType, stylesMain } from '../../../../globals/constants'
 import InputText from '../../../Common/input-text'
 import LogoApp from '../../../Common/logo-app'
 import { changeRoleUser, onChangeText, onPressRegister } from '../../../../core/Actions/RegisterAction'
-import { add } from 'react-native-reanimated'
-import SelectRoleUser from '../../../Common/select-role-user'
+//import SelectRoleUser from '../../../Common/select-role-user'
 
 const RegisterContainer = (props) => {
 
@@ -30,9 +29,9 @@ const RegisterContainer = (props) => {
                 <LogoApp size={120} textSize={24} />
             </View>
 
-            <SelectRoleUser
+            {/* <SelectRoleUser
                 changeRoleUser={changeRoleUser}
-            />
+            /> */}
             
             <InputText
                 style={styles.inputText}

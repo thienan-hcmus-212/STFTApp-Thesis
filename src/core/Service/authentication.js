@@ -21,20 +21,19 @@ const loginSuccess = (data, storeAuth, didLogin) => {
 }
 
 const isValidToken = (auth) => new Promise((resolve, reject) => {
-    //resolve(200)
-    const axiosCheckAuth = axiosWithToken(auth)
-
-    setTimeout(() => {
-        axiosCheckAuth.get(`${app.api.user.getInfo}${auth.username}`, { timeout: 3000 })
-            .then((response) => {
-                resolve(response.status)
-            })
-            .catch((error) => {
-                error.response ?
-                    reject({ status: error.response.status, error: error.response.data }) :
-                    reject({ status: 400, error: { message: error.toString() } })
-            })
-        }, 0)
+    resolve(200)
+    // const axiosCheckAuth = axiosWithToken(auth)
+    // setTimeout(() => {
+    //     axiosCheckAuth.get(`${app.api.user.getInfo}${auth.username}`, { timeout: 3000 })
+    //         .then((response) => {
+    //             resolve(response.status)
+    //         })
+    //         .catch((error) => {
+    //             error.response ?
+    //                 reject({ status: error.response.status, error: error.response.data }) :
+    //                 reject({ status: 400, error: { message: error.toString() } })
+    //         })
+    //     }, 0)
 })
 
 export { checkStatus, loginFail, loginSuccess, isValidToken }

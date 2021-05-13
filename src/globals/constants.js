@@ -11,7 +11,9 @@ const app = {
         RegisterScreen:'RegisterScreen',
         SatisticMainTab: 'SatisticMainTab',
         InfoRegistrationMainTab: 'InfoRegistrationMainTab',
-        MainScreenNavigation: 'MainScreenNavigation'
+        MainScreenNavigation: 'MainScreenNavigation',
+        InfoRegistrationList: 'InfoRegistration_List_Registration',
+        InfoRegistrationItemInfo: 'InfoRegistration_Item_Info'
     },
     api: {
         root: "http://34.126.80.26:80/v1/api/",
@@ -59,6 +61,23 @@ const actionsType = {
         registerStart: 'REGISTER_START',
         resetStatus: 'REGISTER_RESET_STATUS',
         changeRoleUser: 'REGISTER_CHANGE_ROLE_USER'
+    },
+    registration: {
+        setName: "REGISTRATION_SETNAME",
+        setNumPerson: "REGISTRATION_SET_NUM_PERSON",
+        setPhone: "REGISTRATION_setPhone",
+        setLongitude: "REGISTRATION_setLongitude",
+        setLatitude: "REGISTRATION_setLatitude",
+        setWardId: "REGISTRATION_setWardId",
+        setNullError: "REGISTRATION_setNullError",
+        setErrorNumPersion: "REGISTRATION_setErrorNumPerson",
+        setErrorPhone: "REGISTRATION_setErrorPhone",
+        setErrorWardId: "REGISTRATION_setErrorWardId",
+        setInfoOfItem: "REGISTRATION_setInfoOfItem",
+        setImage: "REGISTRATION_setImage",
+        setListData: "REGISTRATION_setList",
+        setLoadingListTrue: "REGISTRATION_setLoadingList_True",
+        setLoadingListFalse: "REGISTRATION_setLoadingList_False",
     }
 }
 
