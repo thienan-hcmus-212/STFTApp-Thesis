@@ -41,7 +41,7 @@ const Register = (props) => {
     return (
         <View style={styles.container}>
             {isLoading ?
-                <View style={styles.container}>
+                <View style={{flex:1,justifyContent: 'center' , alignItems: 'center'}}>
                     <ActivityIndicator size={90} color="blue" />
                 </View> 
                 :

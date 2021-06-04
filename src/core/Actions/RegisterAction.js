@@ -1,5 +1,6 @@
-import { actionsType } from '../../globals/constants'
+import { actionsType, app } from '../../globals/constants'
 import axios from 'axios'
+import { axiosNoToken } from '../../api/api'
 
 const onChangeText=(t, type)=>{
     return {
@@ -25,21 +26,14 @@ const onRegisterFail=(error) =>{
 }
 
 const onPressRegister = () =>{
-    const url = 'http://34.87.145.78:80/v1/api/auth'
 
-    const authAxios = axios.create({
-        baseURL: url,
-        headers: {
-
-        }
-    })
+    const authAxios = axiosNoToken
 
     return (dispatch, getState) => {
 
         const { username, password , phone, email, firstname, lastname, role } = getState().register
         dispatch({ type: actionsType.register.registerStart })
-
-        authAxios.post(`/signup`, {
+        authAxios.post(`${app.api.signup}`, {
             username,
             password,
             firstname,
@@ -52,6 +46,7 @@ const onPressRegister = () =>{
         }).then((response) => {
                 dispatch(onRegisterSuccess(response))
         }).catch((error) => {
+            console.log(error)
                 error.response?
                     dispatch(onRegisterFail(error.response)):
                     dispatch(onRegisterFail(error))

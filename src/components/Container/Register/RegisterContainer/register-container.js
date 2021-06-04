@@ -5,13 +5,12 @@ import { actionsType, stylesMain } from '../../../../globals/constants'
 import InputText from '../../../Common/input-text'
 import LogoApp from '../../../Common/logo-app'
 import { changeRoleUser, onChangeText, onPressRegister } from '../../../../core/Actions/RegisterAction'
-//import SelectRoleUser from '../../../Common/select-role-user'
+import SelectRoleUser from '../../../Common/select-role-user'
 
 const RegisterContainer = (props) => {
 
     const { username, password, firstname, lastname, phone, email, passwordConfirm } = props.data
     const { changeRoleUser ,onChangeUsername, onChangePassword, onChangeEmail, onChangeFirstname, onChangeLastname, onChangePhone, onChangeConfirmPassword, onPressRegister } = props
-    console.log(props.data.role)
     const inputRef = useRef([])
 
     const focusNextInput = (i) => {
@@ -29,9 +28,9 @@ const RegisterContainer = (props) => {
                 <LogoApp size={120} textSize={24} />
             </View>
 
-            {/* <SelectRoleUser
+            <SelectRoleUser
                 changeRoleUser={changeRoleUser}
-            /> */}
+            />
             
             <InputText
                 style={styles.inputText}

@@ -1,5 +1,6 @@
 import { actionsType, app } from "../../globals/constants"
 import { axiosNoToken } from "../../api/api"
+import axios from "axios"
 
 const onChangeUsername = (t) => {
     return {
@@ -36,12 +37,10 @@ const onLoginFail = (error) =>{
 const onPressLogin = () => {
 
     return (dispatch, getState) => {
-
         const { username, password } = getState().login
-
         dispatch({ type: actionsType.login.startLogin })
 
-        axiosNoToken.post(app.api.signin, {
+        axiosNoToken.post(`${app.api.signin}`, {
             username,
             password
         }, {
@@ -53,9 +52,7 @@ const onPressLogin = () => {
                     dispatch(onLoginFail(error.response)):
                     dispatch(onLoginFail(error))
             })
-
     }
-
 }
 
 export { onChangeUsername, onChangePassword, onPressLogin }

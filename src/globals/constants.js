@@ -13,14 +13,29 @@ const app = {
         InfoRegistrationMainTab: 'InfoRegistrationMainTab',
         MainScreenNavigation: 'MainScreenNavigation',
         InfoRegistrationList: 'InfoRegistration_List_Registration',
-        InfoRegistrationItemInfo: 'InfoRegistration_Item_Info'
+        InfoRegistrationItemInfo: 'InfoRegistration_Item_Info',
+        ModalPickGPS: 'Modal_Pick_GPS',
+        Rescue: "Map_Rescue",
+        RescueTab: "Rescue_Tab",
+        RescueRegistration: "Rescue_Registration",
+        RescueStartRescue: "Rescue_Start_rescue"
     },
     api: {
-        root: "http://34.126.80.26:80/v1/api/",
-        signin: `auth/signin/`,
-        signup: `auth/signup/`,
+        root: "http://34.126.148.60:8080/v1/api/",
+        signin: `auth/signin`,
+        signup: `auth/signup`,
         user: {
-            getInfo: `accounts/`
+            getInfo: `accounts/`,
+            getRegistration: `registrations/MyRegistrations`,
+            postRegistration: `registrations/users`
+        },
+        rescuer: {
+            registerLocation: 'locationRegistrations/wards/',
+            startRescue: 'rescuerSaving/go?',
+            stop: 'rescuerSaving/stop',
+            sendGPS: 'rescuerSaving/GPS',
+            getList: 'rescuerSaving/destinations',
+            getRegistration: 'locationRegistrations/myRegistration/rescuer'
         }
     },
     role: {
@@ -28,6 +43,12 @@ const app = {
         volunteer: 'role_volunteer',
         rescuer: 'role_rescuer',
         authority: 'role_authority'
+    },
+    state_victim:{
+        unAuthentica: "STATE_UNAUTHENTICATED",
+        safe: "STATE_SAVED",
+        emergency: "STATE_EMERGENCY",
+        danger: "STATE_DANGER"
     }
 }
 
@@ -78,7 +99,22 @@ const actionsType = {
         setListData: "REGISTRATION_setList",
         setLoadingListTrue: "REGISTRATION_setLoadingList_True",
         setLoadingListFalse: "REGISTRATION_setLoadingList_False",
-    }
+        setNullInfo: "REGISTRATION_setNull_Info",
+        setErrorStatus: "REGISTRATION_set_error_post_request",
+        setStatus: "REGISTRATION_set_status_post_request"
+    },
+    rescue:{
+        setUserLocation: "Rescue_set_user_location",
+        setListVictim: "Rescue_set_list_victim",
+        setBoardSize: "Rescue_set_boardSize",
+        setCloserListVictim: "Rescue_set_closer_list_victim",
+        addRefIndexToItem: "Rescue_set_ref_index_to_item",
+        setSelectItem: "Rescue_set_Select_item",
+        setStartLocation: "Rescue_set_Start_location",
+        setDestinationList: "Rescue_set_Destination_List",
+        refreshGo: "Rescue_refresh_go",
+        setRouteToDestinationList: "Rescue_set_route_to_destination_list"
+    },
 }
 
 const regexTypes={

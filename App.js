@@ -17,9 +17,10 @@ export default function App()  {
     <NavigationContainer>
       <Provider store={store}>
         <PersistGate persistor={persistor} loading={null}>
+
           <StatusBar></StatusBar>
           <MainAppNavigation/>
-          
+        
         </PersistGate>
       </Provider>
     </NavigationContainer>

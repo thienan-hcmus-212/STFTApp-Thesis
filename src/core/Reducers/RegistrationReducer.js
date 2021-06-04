@@ -15,6 +15,10 @@ const initRegistration = {
             numPerson: null,
             phone: null,
             wardId: null
+        },
+        status:{
+            status:null,
+            error:null
         }
     }
 }
@@ -67,7 +71,7 @@ const RegistrationReducers = (state = initRegistration, action) => {
                     longitude: action.t
                 }
             }
-        case actionsType.registration.wardId:
+        case actionsType.registration.setWardId:
             return {
                 ...state,
                 infoARegistration: {
@@ -82,7 +86,7 @@ const RegistrationReducers = (state = initRegistration, action) => {
                     ...state.infoARegistration,
                     error: {
                         ...state.infoARegistration.error,
-                        numPerson: action.errorNumPerson
+                        numPerson: action.t
                     }
                 }
             }
@@ -93,7 +97,7 @@ const RegistrationReducers = (state = initRegistration, action) => {
                     ...state.infoARegistration,
                     error: {
                         ...state.infoARegistration.error,
-                        phone: action.errorPhone
+                        phone: action.t
                     }
                 }
             }
@@ -120,7 +124,7 @@ const RegistrationReducers = (state = initRegistration, action) => {
                     ...state.infoARegistration,
                     error: {
                         ...state.infoARegistration.error,
-                        wardId: action.errorWardId
+                        wardId: action.t
                     }
                 }
             }
@@ -138,6 +142,34 @@ const RegistrationReducers = (state = initRegistration, action) => {
             return {
                 ...state,
                 isLoadingFetchingList: false
+            }
+        case actionsType.registration.setNullInfo:
+            return {
+                ...state,
+                infoARegistration: initRegistration.infoARegistration
+            }
+
+        case actionsType.registration.setErrorStatus:
+            return {
+                ...state,
+                infoARegistration: {
+                    ...state.infoARegistration,
+                    status: {
+                        ...state.infoARegistration.status,
+                        error: action.error
+                    }
+                }
+            }
+        case actionsType.registration.setStatus:
+            return {
+                ...state,
+                infoARegistration: {
+                    ...state.infoARegistration,
+                    status: {
+                        ...state.infoARegistration.status,
+                        status: action.status
+                    }
+                }
             }
     }
     return state

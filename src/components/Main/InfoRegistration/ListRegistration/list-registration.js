@@ -1,41 +1,63 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, Modal, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, Modal, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { app } from '../../../../globals/constants'
 import ItemListRegistration from '../ListItemRegistration/list-item-registration'
-import {connect} from 'react-redux'
-import { deleteItemList, fetchingRegistrationList } from '../../../../core/Actions/RegistrationAction'
-import infoARegistration from '../InfoARegistration/info-a-registration'
+import { connect } from 'react-redux'
+import { deleteItemList, fetchingRegistrationList, setErrorStatus, setStatus } from '../../../../core/Actions/RegistrationAction'
 
 const ListRegistration = (props) => {
     const { navigation } = props
     const [modalShowSelectAdd, setModalShowSelectAdd] = useState(false)
 
-    const {registrationData, deleteItem} = props
-    const {isLoadingFetchingList, fetchList} = props
+    const { registrationData, deleteItem } = props
+    const { isLoadingFetchingList, fetchList } = props
+    const { auth, status, setNullStatus, setNullErrorStatus } = props
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
             headerRight: () => (
-                <Ionicons
-                    name="add-circle-outline"
-                    size={40}
-                    color="#fff"
-                    onPress={() => setModalShowSelectAdd(true)} />
+                <TouchableOpacity
+                    onPress={() => setModalShowSelectAdd(true)}
+                >
+                    <Ionicons
+                        name="add-circle-outline"
+                        size={40}
+                        color="#000"
+                    />
+                </TouchableOpacity>
+
             ),
         });
     }, [navigation]);
 
-    useEffect(()=>{
-        fetchList()
-    },[])
+    useEffect(() => {
+        fetchList(auth)
+    }, [])
+
+    useEffect(() => {
+        if (status.status && status.status == 200) {
+            setNullStatus()
+            fetchList(auth)
+        }
+    }, [status])
+
+    const addtoList = () => {
+        setModalShowSelectAdd(false)
+        navigation.navigate(app.navigation.InfoRegistrationItemInfo, { editable: true, item: null })
+    }
+
+    const addEmergencyCase = () => {
+        setModalShowSelectAdd(false)
+        navigation.navigate(app.navigation.InfoRegistrationItemInfo, { editable: true, item: null })
+    }
 
     const renderItem = ({ item }) => {
         return (
             <ItemListRegistration
                 item={item}
-                deleteItem={()=>deleteItem(item)}
-                onPress={()=>navigation.navigate(app.navigation.InfoRegistrationItemInfo,{editable:false,item:item})}
+                deleteItem={() => deleteItem(item)}
+                onPress={() => navigation.navigate(app.navigation.InfoRegistrationItemInfo, { editable: false, item: item })}
             />
         )
     }
@@ -54,31 +76,31 @@ const ListRegistration = (props) => {
                     <View style={styles.modalView}>
                         <TouchableOpacity
                             style={[styles.button, styles.buttonBlue]}
-                            onPress={() => setModalShowSelectAdd(false)}
+                            onPress={() => addtoList()}
                         >
-                            <Text style={styles.textStyle}>Add to registration list</Text>
+                            <Text style={styles.textStyle}>Thêm vào Danh sách đăng kí </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.button, styles.buttonRed]}
-                            onPress={() => setModalShowSelectAdd(false)}
+                            onPress={() => addEmergencyCase()}
                         >
-                            <Text style={styles.textStyle}>Add emergency situation</Text>
+                            <Text style={styles.textStyle}>Thêm trường hợp khẩn cấp (không thêm vào danh sách) </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </Modal>
-            {isLoadingFetchingList?
+            {isLoadingFetchingList ?
                 <View style={styles.centeredView}>
                     <ActivityIndicator size={90} color="blue" />
                 </View>
-            :
-            <FlatList
-                style={{flex:1}}
-                data={registrationData}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.key}
-            />}     
-            
+                :
+                <FlatList
+                    style={{ flex: 1 }}
+                    data={registrationData}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id.toString()}
+                />}
+
         </View>
     )
 }
@@ -106,12 +128,15 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 5
+        elevation: 5,
+        width: '60%',
     },
     button: {
         padding: 10,
         elevation: 2,
         width: '100%',
+        margin: 4,
+        borderRadius: 20
     },
     textStyle: {
         color: "black",
@@ -123,26 +148,30 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     buttonRed: {
-        //backgroundColor: '#F40'
+        backgroundColor: '#F40'
     },
     buttonBlue: {
-        //backgroundColor: '#09F'
+        backgroundColor: '#09F'
     },
-    
+
 })
 
-const mapStateToProps = (state) =>{
+const mapStateToProps = (state) => {
     return {
         registrationData: state.registration.registrationList,
         isLoadingFetchingList: state.registration.isLoadingFetchingList,
+        auth: state.auth,
+        status: state.registration.infoARegistration.status
     }
 }
 
-const mapFuncToProps = (dispatch) =>{
+const mapFuncToProps = (dispatch) => {
     return {
         deleteItem: (item) => dispatch(deleteItemList(item)),
-        fetchList: ()=>dispatch(fetchingRegistrationList())
+        fetchList: (auth) => dispatch(fetchingRegistrationList(auth)),
+        setNullStatus: () => dispatch(setStatus(null)),
+        setNullErrorStatus: () => dispatch(setErrorStatus(null))
     }
 }
 
-export default connect(mapStateToProps,mapFuncToProps)(ListRegistration)
+export default connect(mapStateToProps, mapFuncToProps)(ListRegistration)

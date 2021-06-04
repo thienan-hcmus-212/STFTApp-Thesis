@@ -15,4 +15,12 @@ const axiosNoToken = axios.create({
     }
 })
 
-export { axiosNoToken, axiosWithToken }
+const rescuerRegisterLocation = (wardId) =>{
+    return app.api.rescuer.registerLocation+`${wardId}?eRole=ROLE_RESCUER`
+}
+const rescuerStartRescue = (location,boardSize) =>{
+    return app.api.rescuer.startRescue+`longitude=${location.longitude}&latitude=${location.latitude}&boardSize=${boardSize}`
+}
+
+
+export { axiosNoToken, axiosWithToken , rescuerRegisterLocation, rescuerStartRescue}

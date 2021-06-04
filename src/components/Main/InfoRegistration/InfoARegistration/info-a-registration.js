@@ -1,121 +1,123 @@
-import React, { useLayoutEffect, useState, useEffect } from 'react'
-import { View, StyleSheet, Image, KeyboardAvoidingView, ScrollView, Text, Dimensions, Alert, Modal } from 'react-native'
+import React, { useLayoutEffect, useState, useEffect, useCallback } from 'react'
+import { View, StyleSheet, Image, KeyboardAvoidingView, ScrollView, Text, Dimensions, Alert, Modal, TouchableOpacity } from 'react-native'
 import { OutlinedTextField, FilledTextField, TextField } from 'rn-material-ui-textfield'
-import DropDownPicker from 'react-native-dropdown-picker';
+
 import { connect } from 'react-redux'
-import { setInfoARegistration, setInfoOfItem, setLocationOfItem } from '../../../../core/Actions/RegistrationAction';
+import { setInfoARegistration, setInfoOfItem, setNullInfo, onPressPostRequest, setErrorStatus } from '../../../../core/Actions/RegistrationAction';
 import { actionsType } from '../../../../globals/constants';
 
 import MapView, { Marker } from 'react-native-maps';
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { getNameLocation } from '../../../../core/Service/location';
+
+import AvatarPicker from '../../../Common/avatar-picker';
+import SelectLocation from '../../../Common/select-location';
+import SetGPS from '../../../Common/set-gps';
+import { useFocusEffect } from '@react-navigation/native'
 
 
 const InfoARegistration = (props) => {
 
-    //const { item, editable } = props.route.params
-    const [item, setItem] = useState(null)
-    const [editable, setEditable] = useState(true)
-    const { info, setNullError, setInfoOfItem } = props
+    const { item, editable } = props.route.params
 
-    const { name, numPerson, phone, image, error, longitude, latitude } = info
+    // const [item, setItem] = useState(null)
+    // const [editable, setEditable] = useState(true)
 
-    const [t, setTinh] = useState(null)
-    const [h, setHuyen] = useState(null)
-    const [x, setXa] = useState(null)
+    const { navigation } = props
+    const { auth, info } =props
+    const { setNullError, setInfoOfItem, setInfoARegistration, setNullInfo, onPressPost, setNullErrorStatus } = props
+    const { name, numPerson, phone, image, error, longitude, latitude, wardId, status } = info
 
-    const [lTinh, setListTinh] = useState([])
-    const [lHuyen, setListHuyen] = useState([])
-    const [lXa, setListXa] = useState([])
-
-    const [openlTinh, setOpenlTinh] = useState(false);
-    const [openlHuyen, setOpenlHuyen] = useState(false);
-    const [openlXa, setOpenlXa] = useState(false);
-
-    const [fullScreenMap, setFullScreenMap] = useState(false)
-
-    const initLocation = () => {
-        const { tinh, huyen, xa, listTinh, listHuyen, listXa } = getNameLocation(item.wardID)
-
-        setTinh(tinh),
-            setHuyen(huyen),
-            setXa(xa),
-            setListTinh(listTinh),
-            setListHuyen(listHuyen),
-            setListXa(listXa)
-    }
 
     useLayoutEffect(() => {
         setNullError()
         if (!editable) {
             setInfoOfItem(item)
-            initLocation()
-        }
+        } else
+            setNullInfo()
     }, [])
+
+    useFocusEffect(
+        React.useCallback(() => {
+            return () => {
+                setNullError()
+                if (!editable) {
+                    setInfoOfItem(item)
+                } else
+                    setNullInfo()
+            }
+        }, [])
+    )
+
+
+
+    React.useLayoutEffect(() => {
+        (editable) ? navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity
+                    style={{ borderRadius: 100, backgroundColor: 'red' }}
+                    onPress={() => onPressPost(auth)}
+                >
+                    <Ionicons
+                        name="checkmark"
+                        size={40}
+                        color="#fff"
+                    />
+
+                </TouchableOpacity>
+            ),
+        }) : null
+    }, [navigation]);
+
+    useEffect(() => {
+        (status.status == 200) ?
+            navigation.goBack() :
+            null
+    }, [status])
+
+    useEffect(() => {
+        (status.error) ?
+            Alert.alert(`${status.error.status}`, `${status.error.message}`, [
+                {
+                    text: "Cancel",
+                    onPress: () => setNullErrorStatus(),
+                    style: "cancel"
+                }
+            ]) : null
+    }, [status])
 
     return (
         <>
-            <Modal
-                animationType='none'
-                visible={fullScreenMap}
-                onRequestClose={() => {
-                    setFullScreenMap(false)
-                }}
-            >
-                <MapView
-                    style={{ flex: 1 }}
-                    initialRegion={longitude ? {
-                        longitude: longitude,
-                        latitude: latitude,
-                        latitudeDelta: 0.008,
-                        longitudeDelta: 0.008,
-                    } : null}
-                >
-                    {longitude ? (<Marker
-                        key={0}
-                        title={name}
-                        coordinate={{ longitude: longitude, latitude: latitude }}
-                    ></Marker>) : null}
-
-                </MapView>
-                <Ionicons
-                    name="expand-outline"
-                    size={27}
-                    style={{ position: 'absolute', alignSelf: 'flex-end', padding: 2, backgroundColor: 'gray' }}
-                    onPress={() => setFullScreenMap(false)}
-                />
-            </Modal>
             <ScrollView>
                 <KeyboardAvoidingView
                     behavior='height'
                     style={styles.container}>
-                    {image ?
-                        <Image
-                            source={{
-                                uri: image
-                            }}
-                            style={styles.image}
-                        /> : <Image
-                            source={require('../../../../../assets/avatar-none.png')}
-                            style={styles.image}
-                        />}
+
+                    <AvatarPicker
+                        editable={editable}
+                        image={image}
+                        setImage={(uri) => setInfoARegistration(uri, actionsType.registration.setImage)}
+                    />
+
 
                     <View style={{ width: '90%' }}>
-
                         <View style={{ flexDirection: 'row' }}>
                             <View style={{ flex: 5, marginRight: 9 }}>
                                 <OutlinedTextField
-                                    label="Hộ gia đình"
+                                    label="Tên người thân"
                                     editable={editable}
                                     value={name}
+                                    onChangeText={(t) => setInfoARegistration(t, actionsType.registration.setName)}
                                 />
                             </View>
                             <View style={{ flex: 2 }}>
                                 <OutlinedTextField
                                     label="Số người"
                                     editable={editable}
-                                    value={numPerson?.toString()}
+                                    value={numPerson == 0 ? null : numPerson.toString()}
                                     error={error.numPerson}
+                                    keyboardType='phone-pad'
+                                    onChangeText={(t) => setInfoARegistration(t, actionsType.registration.setNumPerson)}
+                                    onFocus={() => setInfoARegistration(null, actionsType.registration.setErrorNumPersion)}
                                 />
                             </View>
                         </View>
@@ -124,82 +126,28 @@ const InfoARegistration = (props) => {
                             editable={editable}
                             value={phone}
                             error={error.phone}
+                            keyboardType='phone-pad'
+                            onChangeText={(t) => setInfoARegistration(t, actionsType.registration.setPhone)}
+                            onFocus={() => setInfoARegistration(null, actionsType.registration.setErrorPhone)}
                         ></OutlinedTextField>
-                        <Text style={{ margin: 20 }}>Địa chỉ</Text>
 
-                        <DropDownPicker
-                            open={openlTinh}
-                            setOpen={setOpenlTinh}
+                        <SelectLocation
+                            wardId={item ? item.ward.id : wardId}
+                            editable={editable}
+                            setWardId={(t) => setInfoARegistration(t, actionsType.registration.setWardId)}
+                            error={error.wardId}
+                            onFocus={()=>setInfoARegistration(null,actionsType.registration.setErrorWardId)}
+                        ></SelectLocation>
 
-                            items={lTinh}
-                            setItems={setListTinh}
-
-                            value={t}
-                            setValue={setTinh}
-
-                            listMode="MODAL"
-                            disabled={!editable}
-                            style={styles.dropdown}
+                        <SetGPS
+                            longitude={longitude}
+                            latitude={latitude}
+                            editable={editable}
+                            wardId={wardId}
+                            navigation={navigation}
+                            setLongitude={(t) => setInfoARegistration(t, actionsType.registration.setLongitude)}
+                            setLatitude={(t) => setInfoARegistration(t, actionsType.registration.setLatitude)}
                         />
-
-                        <DropDownPicker
-                            open={openlHuyen}
-                            setOpen={setOpenlHuyen}
-
-                            items={lHuyen}
-                            setItems={setListHuyen}
-
-                            value={h}
-                            setValue={setHuyen}
-
-                            listMode="MODAL"
-                            disabled={!editable}
-                            style={styles.dropdown}
-                        />
-
-                        <DropDownPicker
-                            open={openlXa}
-                            setOpen={setOpenlXa}
-
-                            items={lXa}
-                            setItems={setListXa}
-
-                            value={x}
-                            setValue={setXa}
-
-                            listMode="MODAL"
-                            disabled={!editable}
-                            style={styles.dropdown}
-                        />
-
-                        <Text style={{ margin: 20 }}>Tọa Độ</Text>
-                        <View style={{ borderWidth: 2 }}>
-                            <MapView
-                                style={styles.map}
-                                initialRegion={longitude ? {
-                                    latitude: latitude,
-                                    longitude: longitude,
-                                    latitudeDelta: 0.02,
-                                    longitudeDelta: 0.02,
-                                } : null}
-                            >
-
-                                {longitude ? (<Marker
-                                    key={0}
-                                    title={name}
-                                    coordinate={{ longitude: longitude, latitude: latitude }}
-                                ></Marker>) : null}
-
-                            </MapView>
-                            <Ionicons
-                                name="expand-outline"
-                                size={27}
-                                style={{ position: 'absolute', alignSelf: 'flex-end', padding: 2, backgroundColor: 'gray' }}
-                                onPress={() => setFullScreenMap(true)}
-                            />
-                        </View>
-
-
                     </View>
                 </KeyboardAvoidingView>
                 <View
@@ -220,15 +168,6 @@ const styles = StyleSheet.create({
         padding: 20
 
     },
-    image: {
-        height: 120,
-        width: 120,
-        borderRadius: 100,
-        margin: 12
-    },
-    dropdown: {
-        marginVertical: 2
-    },
     map: {
         //width: Dimensions.get('window').width,
         height: 270,
@@ -237,7 +176,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        info: state.registration.infoARegistration
+        info: state.registration.infoARegistration,
+        auth: state.auth,
     }
 }
 
@@ -246,6 +186,9 @@ const mapFuncToProps = (dispatch) => {
         setInfoARegistration: (t, type) => dispatch(setInfoARegistration(t, type)),
         setInfoOfItem: (item) => dispatch(setInfoOfItem(item)),
         setNullError: () => dispatch(setInfoARegistration(null, actionsType.registration.setNullError)),
+        setNullInfo: () => dispatch(setNullInfo()),
+        onPressPost: (auth) => dispatch(onPressPostRequest(auth)),
+        setNullErrorStatus: () => dispatch(setErrorStatus(null))
     }
 }
 

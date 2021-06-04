@@ -2,13 +2,12 @@ import React from 'react'
 import { View, StyleSheet, Text, Image, Pressable, Alert } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
-const getNameLocation = (wardId) => {
-    return "Lai Thieu, Thuan An, Binh Duong"
-}
+import {getNameLocation} from '../../../../core/Service/location'
 const sizeIcon = 22
 const ItemListRegistration = (props) => {
     const item = props.item
     const { deleteItem, onPress } = props
+    const location = getNameLocation(item.ward?.id)
     return (
         <Pressable
             style={({ pressed }) => [{ backgroundColor: pressed ? '#C8C8C8' : 'white' }, styles.container]}
@@ -60,7 +59,7 @@ const ItemListRegistration = (props) => {
                     size={sizeIcon}
                     style={styles.icons}
                 />
-                <Text>{getNameLocation(item.wardId)}</Text>
+                <Text>{location.xa + ", " + location.huyen+ ", " + location.tinh}</Text>
             </View>
         </Pressable>
     )
