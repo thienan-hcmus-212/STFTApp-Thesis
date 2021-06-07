@@ -2,15 +2,7 @@ import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 
 const ShowRoute = (props)=>{
-
-    const renderItemRoute = ()=>{
-        return (
-            <View>
-                
-            </View>
-        )
-    }
-
+    const { item } = props
     return (
         <View style={styles.container}>
 
