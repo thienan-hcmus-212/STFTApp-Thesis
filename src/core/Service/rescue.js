@@ -2,58 +2,58 @@ import { axiosWithToken, rescuerStartRescue } from "../../api/api"
 import { app } from "../../globals/constants"
 
 const startRescue = (auth,location,boardSize) => new Promise((resolve,reject)=>{
-    resolve()
-    // const axiosStart = axiosWithToken(auth)
-    // axiosStart.post(rescuerStartRescue(location,boardSize)).then((response)=>{
-    //     resolve()
-    // }).catch((error)=>{
-    //     if (error.response){
-    //         reject(error.response.data)
-    //     }
-    //     reject({status: 400, message: error})
-    // })
+    //resolve()
+    const axiosStart = axiosWithToken(auth)
+    axiosStart.post(rescuerStartRescue(location,boardSize)).then((response)=>{
+        resolve()
+    }).catch((error)=>{
+        if (error.response){
+            reject(error.response.data)
+        }
+        reject({status: 400, message: error})
+    })
 })
 const stopRescue =(auth)=> new Promise((resolve,reject)=>{
-    resolve()
-    // const axiosStop = axiosWithToken(auth)
-    // axiosStop.post(app.api.rescuer.stop).then((response)=>{
-    //     resolve()
-    // }).catch((error)=>{
-    //     if (error.response){
-    //         reject(error.response.data)
-    //     }
-    //     reject({status: 400, message: error})
-    // })
+    //resolve()
+    const axiosStop = axiosWithToken(auth)
+    axiosStop.post(app.api.rescuer.stop).then((response)=>{
+        resolve()
+    }).catch((error)=>{
+        if (error.response){
+            reject(error.response.data)
+        }
+        reject({status: 400, message: error})
+    })
 })
 const sendLocation=(location,auth)=>new Promise((resolve,reject)=>{
-    setTimeout(()=>resolve(),100)
-    // const axiosSendGPS = axiosWithToken(auth)
-    // axiosSendGPS.post(app.api.rescuer.sendGPS,null,{ params:{
-    //     longitude: location.longitude,
-    //     latitude: location.latitude
-    // }}).then((response)=>{
-    //     resolve()
-    // }).catch((error)=>{
-    //     if (error.response){
-    //         reject(error.response.data)
-    //     }
-    //     reject({status: 400, message: error})
-    // })
+    //setTimeout(()=>resolve(),100)
+    const axiosSendGPS = axiosWithToken(auth)
+    axiosSendGPS.post(app.api.rescuer.sendGPS,null,{ params:{
+        longitude: location.longitude,
+        latitude: location.latitude
+    }}).then((response)=>{
+        resolve()
+    }).catch((error)=>{
+        if (error.response){
+            reject(error.response.data)
+        }
+        reject({status: 400, message: error})
+    })
 })
 
 const listL = [
     {
         id: 12,
         name: "thien an ly",
-        longitude: 106.6957936,
-        latitude: 10.7673912,
+        longitude: 106.6913848,
+        latitude: 10.767572,
         ward: {
             id: "00571",
             name: "Xã Dương Xá",
             type: "Xã"
         },
         phone: "0987456321",
-        numPerson: 3,
+        numPerson: 12,
         eState: "STATE_EMERGENCY"
     },
     {
@@ -147,7 +147,6 @@ const getList=(auth)=>new Promise((resolve,reject)=>{
     
     // const axiosGetList = axiosWithToken(auth)
     // axiosGetList.get(app.api.rescuer.getList).then((response)=>{
-    //     console.log(response.data.data)
     //     resolve(response.data.data)
     // }).catch((error)=>{
     //     console.log(error.response)
@@ -158,5 +157,29 @@ const getList=(auth)=>new Promise((resolve,reject)=>{
     // })
 })
 
+const sendCommitJourneyList = (list, auth) => new Promise((resolve, reject)=>{
+    setTimeout(()=>{
+        resolve()
+    },1000)
+})
 
-export { startRescue, stopRescue, sendLocation, getList}
+const sendUnCommitJourneyList = (list, auth) => new Promise((resolve, reject)=>{
+    setTimeout(()=>{
+        resolve()
+    },1000)
+})
+
+const saveDestination = (item, auth) => new Promise((resolve,reject)=>{
+    //resolve()
+    const axiosSave = axiosWithToken(auth)
+    axiosSave.post(`${app.api.rescuer.saveDestination}${item.id}`,null,{ params:{
+        numPeople: item.numPerson
+    }}).then(()=>{
+        resolve()
+    }).catch(()=>{
+        reject()
+    })
+})
+
+
+export { startRescue, stopRescue, sendLocation, getList, sendCommitJourneyList, sendUnCommitJourneyList, saveDestination}

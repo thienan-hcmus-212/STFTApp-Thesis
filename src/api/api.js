@@ -22,5 +22,12 @@ const rescuerStartRescue = (location,boardSize) =>{
     return app.api.rescuer.startRescue+`longitude=${location.longitude}&latitude=${location.latitude}&boardSize=${boardSize}`
 }
 
+const axiosImage= (auth)=> axios.create({
+    baseURL: app.apiImage.root,
+    headers:{
+        Authorization: auth.token
+    }
+})
 
-export { axiosNoToken, axiosWithToken , rescuerRegisterLocation, rescuerStartRescue}
+
+export { axiosNoToken, axiosWithToken , rescuerRegisterLocation, rescuerStartRescue, axiosImage}

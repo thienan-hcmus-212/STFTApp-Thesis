@@ -20,7 +20,6 @@ const getDirectionList = (arrayList) => new Promise((resolve,reject) => {
             access_token: token
         }
     }).then((response)=>{
-        console.log(response.data.routes)
         const direction = response.data.routes[0].geometry.coordinates
         resolve(direction)
     }).catch((error)=>{

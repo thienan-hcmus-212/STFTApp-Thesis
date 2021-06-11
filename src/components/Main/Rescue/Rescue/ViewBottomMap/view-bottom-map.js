@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { View, StyleSheet, TouchableOpacity, Linking, Text } from 'react-native'
+import { View, StyleSheet, TouchableOpacity, Linking, Text, Alert } from 'react-native'
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -7,25 +7,30 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { connect } from 'react-redux'
 
-import { getRhumbLineBearing, getCenter,getCenterOfBounds } from 'geolib'
+import { getRhumbLineBearing } from 'geolib'
 import { actionsType } from '../../../../../globals/constants'
-import { getDirectionList } from '../../../../../core/Service/map-direction'
-import { setRescueUnit } from '../../../../../core/Actions/RescueAction'
+import { setDestinationList, setRescueUnit } from '../../../../../core/Actions/RescueAction'
 import ShowInfo from '../ShowInfo/show-info'
 
 
 const ViewBottomMap = (props) => {
 
     const delta = 0.009
+    const edgePadding = {
+        top:600,
+        bottom:300,
+        left: 9,
+        right: 9
+    }
 
     const { isShowInfoItem, setIsShowInfoItem, mapRef } = props
 
     //redux
-    const { destinationItem, selectItem, destinationList, startLocation } = props.data
-    const { userLocation } = props
+    const { destinationItem, selectItem, destinationList, startLocation} = props.data
+    const { userLocation, boardSize, isGo, listVictim } = props
 
     //redux func
-    const { setDestinationList, setStartLocation, setRouteToDestinationList } = props
+    const { setDestinationList, setStartLocation, setBoardSize } = props
 
 
     const onPressFocus = () => {
@@ -36,74 +41,85 @@ const ViewBottomMap = (props) => {
                 center: userLocation,
                 pitch: 60,
                 heading: heading,
-                zoom: 17,
+                zoom: 18,
             })
         }
     }
 
     const getCurrentGPS = () => {
-        mapRef.current?.animateCamera({ center: userLocation, zoom: 13 })
+        const listLocation = [userLocation,...listVictim].map((item)=>{
+            return {
+                longitude: item.longitude,
+                latitude: item.latitude
+            }
+        })
+
+        mapRef.current?.fitToCoordinates(listLocation,{edgePadding: edgePadding})
+        //mapRef.current?.animateCamera({ center: userLocation, zoom: 13 })
     }
 
+
+    const setFinalDestinationList = (item,list) =>{
+        if ( boardSize >= item.numPerson){
+            setDestinationList(list)
+            setBoardSize(boardSize-item.numPerson)
+        } else {
+            Alert.alert('Thông báo',"Số chỗ trống không đủ để chứa hết người. Thuyền bạn thực sự có thể chứa hêt?",[
+                {
+                    style:'cancel',
+                    text: 'Hủy'
+                },
+                {
+                    style:'destructive',
+                    text: 'Đúng',
+                    onPress: ()=>{
+                        setDestinationList(list)
+                        setBoardSize(boardSize-item.numPerson)
+                    }
+                }
+            ])
+        }
+    }
     const onStartDirectionPress = (item) => {
         const destination = {
             longitude: item.longitude,
             latitude: item.latitude
         }
-        const pointCenter = getCenter([userLocation, destination])
-        const region = {
-            longitude: pointCenter.longitude,
-            latitude: pointCenter.latitude,
-            longitudeDelta: Math.abs(item.longitude - userLocation.longitude) + delta,
-            latitudeDelta: Math.abs(item.latitude - userLocation.latitude) + delta,
-        }
-        mapRef.current?.animateToRegion(region)
+        // const pointCenter = getCenter([userLocation, destination])
+        // const region = {
+        //     longitude: pointCenter.longitude,
+        //     latitude: pointCenter.latitude,
+        //     longitudeDelta: Math.abs(item.longitude - userLocation.longitude),
+        //     latitudeDelta: Math.abs(item.latitude - userLocation.latitude),
+        // }
+        // mapRef.current?.animateToRegion(region)
+        
+        mapRef.current?.fitToCoordinates([userLocation,destination],{ edgePadding: edgePadding })
 
-        setDestinationList([item])
+
         setStartLocation(userLocation)
 
-        getDirectionList([userLocation, destination]).then((array) => {
-            setRouteToDestinationList(array)
-        }).catch((error) => {
+        setFinalDestinationList(item,[item])
 
-        })
 
     }
 
     const onAddDestinationList = (item) =>{
         
-        let minLog = userLocation.longitude
-        let minLat = userLocation.latitude
-        let maxLog = userLocation.longitude
-        let maxLat = userLocation.latitude
-
         const listLocation =[startLocation,...destinationList,item].map((i)=>{
-            minLog=i.longitude>minLog?minLog:i.longitude
-            minLat=i.latitude>minLat?minLat:i.latitude
-            maxLog=i.longitude>maxLog?i.longitude:maxLog
-            maxLat=i.latitude>maxLat?i.latitude:maxLat
             return {
                 longitude: i.longitude,
                 latitude: i.latitude
             }
         })
-
-        const pointCenter = getCenterOfBounds(listLocation)
-        const region = {
-            longitude: pointCenter.longitude,
-            latitude: pointCenter.latitude,
-            longitudeDelta: Math.abs(maxLog - minLog) + delta,
-            latitudeDelta: Math.abs(maxLat - minLat) + delta,
-        }
-        mapRef.current?.animateToRegion(region)
-
-        setDestinationList([...destinationList,item])
-        getDirectionList(listLocation).then((array) => {
-            setRouteToDestinationList(array)
-        }).catch((error) => {
-
+        mapRef.current?.fitToCoordinates(listLocation,{ edgePadding: edgePadding })
+        const findItem = destinationList.find((i)=>{
+            return i.id==item.id
         })
-
+        if (!findItem){
+            setStartLocation(userLocation)
+            setFinalDestinationList(item,[...destinationList,item])
+        }
     }
     
     const moreInfoRef = useRef()
@@ -196,11 +212,11 @@ const ViewBottomMap = (props) => {
 
                         </View>
                         <TouchableOpacity
-                            style={styles.directionButton}
-                            onPress={() => onPressDirectionButton()}
+                            style={isGo?{...styles.directionButton,backgroundColor:'gray'}:{...styles.directionButton,backgroundColor:'red'}}
+                            onPress={() => isGo?null:onPressDirectionButton()}
                         >
                             <Icon
-                                name={destinationItem? "map-marker-plus" : 'directions'}
+                                name={isGo?"alert-rhombus":(destinationItem? "map-marker-plus" : 'directions')}
                                 size={70}
                                 color='white'
                             ></Icon>
@@ -240,7 +256,7 @@ const styles = StyleSheet.create({
 
     },
     directionButton: {
-        backgroundColor: 'red',
+        backgroundColor: 'white',
         height: '100%',
         flex: 3,
         borderTopLeftRadius: 70,
@@ -288,15 +304,20 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         data: state.rescue.go,
-        userLocation: state.rescue.userLocation
+        userLocation: state.rescue.userLocation,
+        boardSize: state.rescue.boardSize,
+        isGo: state.rescue.isGo,
+        listVictim: state.rescue.listVictim
     }
 }
 
 const mapFuncToProps = (dispatch) => {
     return {
-        setDestinationList: (list) => dispatch(setRescueUnit(list, actionsType.rescue.setDestinationList)),
+        setDestinationList: (list) => dispatch(setDestinationList(list)),
         setStartLocation: (location) => dispatch(setRescueUnit(location, actionsType.rescue.setStartLocation)),
-        setRouteToDestinationList: (array) => dispatch(setRescueUnit(array, actionsType.rescue.setRouteToDestinationList))
+        setRouteToDestinationList: (array) => dispatch(setRescueUnit(array, actionsType.rescue.setRouteToDestinationList)),
+        setBoardSize: (size)=> dispatch(setRescueUnit(size,actionsType.rescue.setBoardSize)),
+        
     }
 }
 

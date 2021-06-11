@@ -3,45 +3,45 @@ import { app } from "../../globals/constants"
 
 
 const getWardIdRegistration=(auth) => new Promise((resolve,reject)=>{
-    reject()
-    // const axiosGetRegis = axiosWithToken(auth)
-    // axiosGetRegis.get(app.api.rescuer.getRegistration).then((result)=>{
-    //     resolve(result.data.data.locationId)
-    // }).catch((error)=>{
-    //     if (error.response){
-    //         reject(error.response.data)
-    //     }
-    //     reject({status: 400, message: error})
-    // })
+    //reject()
+    const axiosGetRegis = axiosWithToken(auth)
+    axiosGetRegis.get(app.api.rescuer.getRegistration,{timeout: 3000}).then((result)=>{
+        resolve(result.data.data.locationId)
+    }).catch((error)=>{
+        if (error.response){
+            reject(error.response.data)
+        }
+        reject({status: 400, message: error})
+    })
 })
 
 const registerWardId = (auth,wardId) => new Promise((resolve,reject)=>{
-    resolve()
-    // const axiosRegisterWardId = axiosWithToken(auth)
-    // axiosRegisterWardId.post(rescuerRegisterLocation(wardId)).then((response)=>{
-    //     resolve()
-    // }).catch((error)=>{
-    //     if (error.response){
-    //         error.response.data.message == "you had another request in queue,please delete it before create new one!"?
-    //             resolve():
-    //             reject(error.response.data)
-    //     }
-    //     reject({status: 400, message: error})
-    // })
+    //resolve()
+    const axiosRegisterWardId = axiosWithToken(auth)
+    axiosRegisterWardId.post(rescuerRegisterLocation(wardId),{ timeout: 3000 }).then((response)=>{
+        resolve()
+    }).catch((error)=>{
+        if (error.response){
+            error.response.data.message == "you had another request in queue,please delete it before create new one!"?
+                resolve():
+                reject(error.response.data)
+        }
+        reject({status: 400, message: error})
+    })
 })
 
 const deleteRegistration = (auth,wardId) => new Promise((resolve,reject)=>{
-    resolve()
-    // const axiosDeleteRegis = axiosWithToken(auth)
-    // axiosDeleteRegis.delete(rescuerRegisterLocation(wardId)).then((response)=>{
-    //     resolve()
-    // }).catch((error)=>{
+    //resolve()
+    const axiosDeleteRegis = axiosWithToken(auth)
+    axiosDeleteRegis.delete(rescuerRegisterLocation(wardId),{timeout:3000}).then((response)=>{
+        resolve()
+    }).catch((error)=>{
         
-    //     if (error.response){
-    //         reject(error.response.data)
-    //     }
-    //     reject({status: 400, message: error})
-    // })
+        if (error.response){
+            reject(error.response.data)
+        }
+        reject({status: 400, message: error})
+    })
 })
 
 const checkIsAccept = (auth) => new Promise((resolve,reject)=>{

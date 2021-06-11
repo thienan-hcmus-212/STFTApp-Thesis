@@ -1,4 +1,5 @@
 import { actionsType, app } from "../../globals/constants"
+import { getListImage } from "../Service/image"
 import { getListRegistration, addItemToListRegistration } from "../Service/registration"
 
 
@@ -131,23 +132,38 @@ const Data = [{
 const fetchingRegistrationList = (auth) => {
 
     return (dispatch, getState) => {
-        dispatch(startFetchingRegistrationList())
-
-        setTimeout(() => {
-            dispatch(setList(Data))
-            dispatch(finishFetchingRegistrationList())
-        }, 0)
-
-
         // dispatch(startFetchingRegistrationList())
-        // getListRegistration(auth).then((result)=>{
+        // setTimeout(() => {
+        //     dispatch(setList(Data))
+        //     dispatch(finishFetchingRegistrationList())
+        // }, 0)
 
-        //     dispatch(setList(result.data.data))
-        //     dispatch(finishFetchingRegistrationList())
-        // }).catch((error)=>{
-        //     dispatch(setErrorStatus(error))
-        //     dispatch(finishFetchingRegistrationList())
-        // })
+
+        dispatch(startFetchingRegistrationList())
+        getListRegistration(auth).then((result)=>{
+            let stringId = ''
+            result.map((item)=>{
+                stringId = stringId + item.id +'.'
+            })
+            stringId=stringId.slice(0,stringId.length-1)
+            getListImage(auth,stringId).then((listImage)=>{
+                const newResult = result.map((item)=>{
+                    return {
+                        ...item,
+                        image: listImage[item.id]?(app.apiImage.root + listImage[item.id]):null
+                    }
+                })
+                dispatch(setList(newResult))
+                dispatch(finishFetchingRegistrationList())
+            
+            }).catch((error)=>{
+                dispatch(setErrorStatus(error))
+                dispatch(finishFetchingRegistrationList())
+            })
+        }).catch((error)=>{
+            dispatch(setErrorStatus(error))
+            dispatch(finishFetchingRegistrationList())
+        })
     }
 
 }

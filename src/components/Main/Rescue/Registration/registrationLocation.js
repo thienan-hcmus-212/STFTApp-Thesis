@@ -28,8 +28,10 @@ const RegisterLocation = (props) => {
         registerWardId(auth,wardId).then((result)=>{
             resolve(result)
             setIsModalLoading(false)
+            
         }).catch((error)=>{
             reject(error)
+            
             setIsModalLoading(false)
         })
     })

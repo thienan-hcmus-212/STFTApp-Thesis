@@ -167,10 +167,10 @@ const StartRescue = (props) => {
                 >
                     <View style={{ alignItems: 'center' }}>
                         <Ionicons
-                            name="arrow-back-outline"
+                            name="close"
                             size={70}
                         ></Ionicons>
-                        <Text style={{ fontWeight: 'bold', fontSize: 20 }}>HỦY</Text>
+                        <Text style={{ fontWeight: 'bold', fontSize: 20 }}>XÓA ĐĂNG KÍ</Text>
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -182,7 +182,7 @@ const StartRescue = (props) => {
                             name="arrow-forward-outline"
                             size={70}
                         ></Ionicons>
-                        <Text style={{ fontWeight: 'bold', fontSize: 20 }}>ĐI</Text>
+                        <Text style={{ fontWeight: 'bold', fontSize: 20 }}>BẮT ĐẦU CỨU</Text>
                     </View>
                 </TouchableOpacity>
             </View>
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FF3A00"
     },
     delete_regis: {
-        backgroundColor: 'red',
+        backgroundColor: 'gray',
         flex: 1,
         borderTopLeftRadius: 20,
         justifyContent: 'center',

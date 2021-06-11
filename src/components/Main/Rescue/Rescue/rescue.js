@@ -4,18 +4,20 @@ import MapView, { Marker, Polyline } from 'react-native-maps'
 import { getCurrentLocation } from '../../../../core/Service/location'
 
 import { connect } from 'react-redux'
-import { setRescueUnit, setList, addRefIndexToItem } from '../../../../core/Actions/RescueAction'
-import { actionsType } from '../../../../globals/constants'
+import { setRescueUnit, setList, addRefIndexToItem, get1Destination, sendJourneyToServer } from '../../../../core/Actions/RescueAction'
+import { actionsType, app } from '../../../../globals/constants'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { stopRescue, sendLocation } from '../../../../core/Service/rescue'
 
 import { MarkerForItemList } from './MarkerForItemList/maker-for-item-list'
 
-import { getRhumbLineBearing } from 'geolib'
+import { getRhumbLineBearing, getDistance } from 'geolib'
 import { customStyle } from '../../../../core/Service/style_map'
 import ModalLoading from '../../../Common/modal-loading'
 import ViewTopMap from './ViewTopMap/view-top-map'
 import ViewBottomMap from './ViewBottomMap/view-bottom-map'
+
+import { useNetInfo } from "@react-native-community/netinfo";
 
 
 
@@ -23,37 +25,73 @@ import ViewBottomMap from './ViewBottomMap/view-bottom-map'
 const Rescue = (props) => {
     //constant
     const delta = 0.012
+    
+    //intenet
+    const netInfo = useNetInfo();
 
     //ref
     const mapRef = useRef()
     const markerRef = useRef([])
-    let intervalRefSendLocation = useRef()
     let intervalRefGetLocation = useRef()
 
     //core
     const { navigation, auth } = props
 
     //redux state
-    const { userLocation, listVictim, go } = props.data
-    const { startLocation, destinationItem, destinationList, routeToDestinationList } = go
+    const { userLocation, listVictim, go, isGo, closerListVictim } = props.data
+    const { startLocation, destinationItem, destinationList, routeToDestinationList, listTrace, rotateDegUser } = go
 
     //funtion
-    const { setUserLocation, setSelectItem } = props.setData
-    const { fetchDataAndSetListVictim, addRefIndexToItem } = props
+    const { setUserLocation, setSelectItem, setListTrace, setRotateDegUser } = props.setData
+    const { fetchDataAndSetListVictim, addRefIndexToItem, get1Destination, sendJourneyToServer } = props
 
-    //local
+    //state
     const [isModalLoading, setIsModalLoading] = useState(false)
-    const [rotateDegUser, setRotateDegUser] = useState(-45)
     const [isShowInfoItem, setIsShowInfoItem] = useState(false)
     const [isShowListRoute, setIsShowListRoute] = useState(false)
+    const [isShowClosestVictim, setIsShowClosestVictim] = useState(false)
 
+    const [newLocation, setNewLocation] = useState(null)
+    const [headingOfMap, setHeadingOfMap] = useState(0)
+
+    useEffect(()=>{
+        (netInfo.isConnected)?sendJourneyToServer(auth):null
+    },[netInfo])
+
+    //get a destination
+    useEffect(() => {
+        if (userLocation && destinationItem && (!isShowClosestVictim) && isGo) {
+            
+            if (getDistance(userLocation, destinationItem) < app.minDistance) {
+                setIsShowClosestVictim(true)
+                Alert.alert("Đã rất gần người bị nạn", "Nhấn vào \"đã cứu được\" hoặc tick xanh ở lộ trình phía trên để xác nhận tiếp tục!", [
+                    {
+                        style: 'cancel',
+                        text: 'Để sau',
+                        onPress: () => {
+                            setIsShowClosestVictim(false)
+                        }
+                    },
+                    {
+                        text: 'Đã cứu được',
+                        onPress: () => {
+                            setIsShowClosestVictim(false)
+                            get1Destination(userLocation,destinationItem)
+                            sendJourneyToServer(auth)
+                        }
+                    }
+                ])
+            }
+        }
+    }, [newLocation])
 
     //get list first time 
     //internet
     useEffect(() => {
+        markerRef.current=[]
         fetchDataAndSetListVictim(auth)
     }, [])
-
+    
     //get user location
     useEffect(() => {
         intervalRefGetLocation = setInterval(() => {
@@ -64,32 +102,34 @@ const Rescue = (props) => {
                     longitude: long,
                     latitude: lat
                 }
-                const rotate = Math.trunc(getRhumbLineBearing(userLocation, loca) - 45)
-                setRotateDegUser(rotate)
-                setUserLocation(loca)
+
+                //setNewLocation(loca)
+                setNewLocation({ longitude: 106.6793707, latitude: 10.762533, })
             }).catch((error) => {
                 Alert.alert("Lỗi", `${error.message}`)
             })
-        }, 5000)
+        }, 10000)
         return () => clearInterval(intervalRefGetLocation)
     }, [])
+    useEffect(() => {
+        if (newLocation) {
 
-    //send location : 10s / 1 lan 
+            const rotate = getRhumbLineBearing(userLocation, newLocation) - 45
+
+            if (getDistance(userLocation, newLocation) > 10) {
+                setRotateDegUser(rotate + headingOfMap)
+                setListTrace([...listTrace, newLocation])
+                setUserLocation(newLocation)
+            }
+        }
+    }, [newLocation])
+
+    //send location : 5s / 1 lan 
     //internet
     useEffect(() => {
-        intervalRefSendLocation = setInterval(() => {
-            sendLocation(userLocation, auth)
-        }, 10000)
-        return () => clearInterval(intervalRefSendLocation)
-    }, [])
-
-    //get list after send location 
-    //internet
-    useEffect(() => {
-        setTimeout(() => {
-            fetchDataAndSetListVictim(auth)
-        }, 3000)
+        userLocation && sendLocation(userLocation, auth)
     }, [userLocation])
+
 
     //config back button
     useEffect(() => {
@@ -103,7 +143,7 @@ const Rescue = (props) => {
                 },
                 {
                     text: 'đồng ý',
-                    style: 'cancel',
+                    style: 'destructive',
                     onPress: () => {
                         setIsModalLoading(true)
                         stopRescue(auth).then(() => {
@@ -120,7 +160,7 @@ const Rescue = (props) => {
         })
     }, [navigation])
 
-    
+
 
     const onPressMarker = (item) => {
         setSelectItem(item)
@@ -141,19 +181,19 @@ const Rescue = (props) => {
     }
 
     const renderMarkerForRescuer = (
-            <Marker
-                key={0}
-                coordinate={{ longitude: userLocation.longitude, latitude: userLocation.latitude }}
-            >
-                <View style={{ backgroundColor: "white", padding: 9, borderRadius: 100, transform: [{ rotate: `${rotateDegUser}deg` }] }}>
-                    <Ionicons
-                        name='navigate'
-                        size={24}
-                        color='black'
-                    ></Ionicons>
-                </View>
-            </Marker>
-        )
+        <Marker
+            key={0}
+            coordinate={{ longitude: userLocation.longitude, latitude: userLocation.latitude }}
+        >
+            <View style={{ backgroundColor: "white", padding: 9, borderRadius: 100, transform: [{ rotate: `${rotateDegUser}deg` }] }}>
+                <Ionicons
+                    name={(isGo && listTrace.length > 1) ? 'navigate' : 'radio-button-on'}
+                    size={24}
+                    color='black'
+                ></Ionicons>
+            </View>
+        </Marker>
+    )
 
     const renderDirection = () => (
         <>
@@ -164,7 +204,7 @@ const Rescue = (props) => {
                         latitude: item[1]
                     }
                 })}
-                strokeColor="red" // fallback for when `strokeColors` is not supported by the map-provider
+                strokeColor="green" // fallback for when `strokeColors` is not supported by the map-provider
                 strokeWidth={7}
             ></Polyline>
             <Polyline
@@ -181,6 +221,27 @@ const Rescue = (props) => {
         </>
     )
 
+    const renderTraceOfUser = () => {
+        return (
+            <Polyline
+                coordinates={listTrace.map((item) => {
+                    return {
+                        longitude: item.longitude,
+                        latitude: item.latitude
+                    }
+                })}
+                strokeColor="gray" // fallback for when `strokeColors` is not supported by the map-provider
+                strokeWidth={7}
+                lineDashPattern={[1]}
+            ></Polyline>)
+    }
+    const onRegionChange = () => {
+        mapRef.current?.getCamera().then((result) => {
+            const changeRotate = result.heading - headingOfMap
+            setRotateDegUser(rotateDegUser - changeRotate)
+            setHeadingOfMap(result.heading)
+        })
+    }
 
     return (
         <View style={styles.container}>
@@ -198,29 +259,40 @@ const Rescue = (props) => {
                     latitudeDelta: delta * 9,
                     longitudeDelta: delta * 9
                 }}
+                mapPadding={{
+                    top: 240,
+                    bottom: 120,
+                    left: 21,
+                    right: 21
+                }}
+                onRegionChange={() => onRegionChange()}
             >
 
-                {renderMarkerForRescuer}
 
-                {listVictim && listVictim.map((item) => {
+
+                {listVictim && [...listVictim,...closerListVictim].map((item) => {
                     const addRef = (el) => addToRef(el, item.id)
                     return MarkerForItemList(item, onPressMarker, addRef)
                 })}
 
                 {destinationItem ? renderDirection() : null}
 
+                {isGo && renderTraceOfUser()}
+                {renderMarkerForRescuer}
+
             </MapView>
 
             <View style={styles.interactMap}>
                 <ViewTopMap
                     isShowListRoute={isShowListRoute}
-                    setIsShowListRoute={(isShow)=>setIsShowListRoute(isShow)}
+                    setIsShowListRoute={(isShow) => setIsShowListRoute(isShow)}
                     mapRef={mapRef}
+                    markerRef={markerRef}
                 ></ViewTopMap>
 
                 <ViewBottomMap
                     isShowInfoItem={isShowInfoItem}
-                    setIsShowInfoItem={(isShow)=>setIsShowInfoItem(isShow)}
+                    setIsShowInfoItem={(isShow) => setIsShowInfoItem(isShow)}
                     mapRef={mapRef}
                 ></ViewBottomMap>
 
@@ -261,9 +333,13 @@ const mapFuncToProps = (dispatch) => {
         setData: {
             setUserLocation: (location) => dispatch(setRescueUnit(location, actionsType.rescue.setUserLocation)),
             setSelectItem: (item) => dispatch(setRescueUnit(item, actionsType.rescue.setSelectItem)),
+            setListTrace: (arrayLocation) => dispatch(setRescueUnit(arrayLocation, actionsType.rescue.setListTrace)),
+            setRotateDegUser: (deg) => dispatch(setRescueUnit(deg, actionsType.rescue.setRotateDegUser))
         },
         fetchDataAndSetListVictim: (auth) => dispatch(setList(auth)),
         addRefIndexToItem: (id, index) => dispatch(addRefIndexToItem(id, index)),
+        get1Destination: (userLocation,destinationItem) => dispatch(get1Destination(userLocation,destinationItem)),
+        sendJourneyToServer: (auth)=>dispatch(sendJourneyToServer(auth))
     }
 }
 

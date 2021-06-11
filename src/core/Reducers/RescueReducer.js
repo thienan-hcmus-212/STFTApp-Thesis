@@ -2,26 +2,45 @@ import { actionsType } from "../../globals/constants"
 
 const initRescue= {
     userLocation: {
-        longitude: 106.6839969,
-        latitude: 10.7636702,
+        longitude: 106.6793707,
+        latitude: 10.762533,
     },
-    boardSize: 1,
+    boardSize: 9,
     listRefItem: [],
     listVictim: [],
     closerListVictim: [],
+    isGo: false,
     go:{
         selectItem: null,
         destinationItem: null,
         startLocation: null,
         destinationList: [],
-        routeToDestinationList: []
+        routeToDestinationList: [],
+        listTrace: [],
+        rotateDegUser: 315,
+    },
+    memory:{
+        isClear: true,
+        array: []
     }
+}
+const initMemory= {
+    isClear: true,
+    array: []
+}
+const objectInArrayOfMemory={
+    destinationItem:null,
+    startLocation:null,
+    listTrace:[]
 }
 const initGo = {
     destinationItem: null,
     startLocation: null,
     destinationList: [],
-    routeToDestinationList: []
+    routeToDestinationList: [],
+    selectItem: null,
+    listTrace: [],
+    rotateDegUser: 315,
 }
 
 const RescueReducer = (state=initRescue,action) =>{
@@ -34,7 +53,7 @@ const RescueReducer = (state=initRescue,action) =>{
         case actionsType.rescue.setBoardSize:
             return {
                 ...state,
-                boardSize: action.t
+                boardSize: (action.t>0)?action.t:0
             }
         case actionsType.rescue.setListVictim: 
             return {
@@ -57,7 +76,7 @@ const RescueReducer = (state=initRescue,action) =>{
                 go:{
                     ...state.go,
                     destinationList: action.t,
-                    destinationItem: action.t[0],
+                    destinationItem: (action.t.length>0)?action.t[0]:null,
                 }
             }
         case actionsType.rescue.setStartLocation:
@@ -65,7 +84,8 @@ const RescueReducer = (state=initRescue,action) =>{
                 ...state,
                 go:{
                     ...state.go,
-                    startLocation: action.t
+                    startLocation: action.t,
+                    listTrace: [action.t]
                 }
             }
         case actionsType.rescue.setSelectItem:
@@ -79,6 +99,7 @@ const RescueReducer = (state=initRescue,action) =>{
         case actionsType.rescue.refreshGo:
             return {
                 ...state,
+                isGo: false,
                 go: {
                     ...state.go,
                     ...initGo
@@ -90,6 +111,47 @@ const RescueReducer = (state=initRescue,action) =>{
                 go:{
                     ...state.go,
                     routeToDestinationList: action.t
+                }
+            }
+        case actionsType.rescue.setGobutton:
+            return {
+                ...state,
+                isGo: action.t
+            }
+        case actionsType.rescue.setListTrace:
+            return {
+                ...state,
+                go:{
+                    ...state.go,
+                    listTrace: action.t
+                }
+            }
+        case actionsType.rescue.setRotateDegUser:
+            return {
+                ...state,
+                go:{
+                    ...state.go,
+                    rotateDegUser: (action.t<0)?action.t+360:(action.t>360?action.t-360:action.t)
+                }
+            }
+        case actionsType.rescue.addItemToMemory:
+            return {
+                ...state,
+                memory:{
+                    isClear: false,
+                    array: [...state.memory.array,action.item]
+                }
+            }
+        case actionsType.rescue.removeItemToMemory:
+            return {
+                ...state,
+                memory:{
+                    array: state.memory.array.filter((item)=>{
+                        return (item.destinationItem.id!=action.item.destinationItem.id)
+                    }),
+                    isClear: (state.memory.array.filter((item)=>{
+                        return (item.destinationItem.id!=action.item.destinationItem.id)
+                    }).length>0)?false:true
                 }
             }
     }

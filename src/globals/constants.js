@@ -21,7 +21,7 @@ const app = {
         RescueStartRescue: "Rescue_Start_rescue"
     },
     api: {
-        root: "http://34.126.148.60:8080/v1/api/",
+        root: "http://34.126.187.47:8080/v1/api/",
         signin: `auth/signin`,
         signup: `auth/signup`,
         user: {
@@ -35,7 +35,16 @@ const app = {
             stop: 'rescuerSaving/stop',
             sendGPS: 'rescuerSaving/GPS',
             getList: 'rescuerSaving/destinations',
-            getRegistration: 'locationRegistrations/myRegistration/rescuer'
+            getRegistration: 'locationRegistrations/myRegistration/rescuer',
+            saveDestination: 'rescuerSaving/saveDestinations/'
+        }
+    },
+    apiImage:{
+        root: "http://34.126.187.47:8082/",
+        user:{
+            getImage:"pythonService/registrations/images/item/",
+            getListImage: "pythonService/registrations/images/list/",
+            searchImage: "pythonService/registrations/searching/"
         }
     },
     role: {
@@ -49,7 +58,8 @@ const app = {
         safe: "STATE_SAVED",
         emergency: "STATE_EMERGENCY",
         danger: "STATE_DANGER"
-    }
+    },
+    minDistance: 100
 }
 
 const actionsType = {
@@ -113,7 +123,12 @@ const actionsType = {
         setStartLocation: "Rescue_set_Start_location",
         setDestinationList: "Rescue_set_Destination_List",
         refreshGo: "Rescue_refresh_go",
-        setRouteToDestinationList: "Rescue_set_route_to_destination_list"
+        setRouteToDestinationList: "Rescue_set_route_to_destination_list",
+        setGobutton: "Rescue_set_go_button",
+        setListTrace: "Rescue_set_list_trace",
+        setRotateDegUser: 'Rescue_set_rotate_deg_user',
+        addItemToMemory: 'Rescue_add_item_to_memory',
+        removeItemToMemory: 'Rescue_remove_item_from_memory'
     },
 }
 
