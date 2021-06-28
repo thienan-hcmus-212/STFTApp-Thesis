@@ -25,7 +25,8 @@ const rescuerStartRescue = (location,boardSize) =>{
 const axiosImage= (auth)=> axios.create({
     baseURL: app.apiImage.root,
     headers:{
-        Authorization: auth.token
+        Authorization: auth.token,
+        'content-type': 'multipart/form-data',
     }
 })
 

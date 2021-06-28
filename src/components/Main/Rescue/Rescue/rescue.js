@@ -4,14 +4,14 @@ import MapView, { Marker, Polyline } from 'react-native-maps'
 import { getCurrentLocation } from '../../../../core/Service/location'
 
 import { connect } from 'react-redux'
-import { setRescueUnit, setList, addRefIndexToItem, get1Destination, sendJourneyToServer } from '../../../../core/Actions/RescueAction'
+import { setRescueUnit, setList, addRefIndexToItem, get1Destination, sendJourneyToServer, setLaterForItemOfDestinationList, refreshTrip } from '../../../../core/Actions/RescueAction'
 import { actionsType, app } from '../../../../globals/constants'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { stopRescue, sendLocation } from '../../../../core/Service/rescue'
 
 import { MarkerForItemList } from './MarkerForItemList/maker-for-item-list'
 
-import { getRhumbLineBearing, getDistance } from 'geolib'
+import { getDistance } from 'geolib'
 import { customStyle } from '../../../../core/Service/style_map'
 import ModalLoading from '../../../Common/modal-loading'
 import ViewTopMap from './ViewTopMap/view-top-map'
@@ -19,7 +19,13 @@ import ViewBottomMap from './ViewBottomMap/view-bottom-map'
 
 import { useNetInfo } from "@react-native-community/netinfo";
 
-
+function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = value;
+    });
+    return ref.current;
+  }
 
 
 const Rescue = (props) => {
@@ -39,95 +45,101 @@ const Rescue = (props) => {
 
     //redux state
     const { userLocation, listVictim, go, isGo, closerListVictim } = props.data
-    const { startLocation, destinationItem, destinationList, routeToDestinationList, listTrace, rotateDegUser } = go
+    const { startLocation, destinationItem, destinationList, routeToDestinationList, listTrace, rotateDegUser, selectItem } = go
 
     //funtion
     const { setUserLocation, setSelectItem, setListTrace, setRotateDegUser } = props.setData
-    const { fetchDataAndSetListVictim, addRefIndexToItem, get1Destination, sendJourneyToServer } = props
+    const { fetchDataAndSetListVictim, addRefIndexToItem, get1Destination, sendJourneyToServer , setLater, refreshTrip} = props
 
     //state
     const [isModalLoading, setIsModalLoading] = useState(false)
     const [isShowInfoItem, setIsShowInfoItem] = useState(false)
     const [isShowListRoute, setIsShowListRoute] = useState(false)
-    const [isShowClosestVictim, setIsShowClosestVictim] = useState(false)
+    const [isShowNotiClosestVictim, setIsShowNotiClosestVictim] = useState(false)
 
-    const [newLocation, setNewLocation] = useState(null)
     const [headingOfMap, setHeadingOfMap] = useState(0)
 
+    const previousDestinationList = usePrevious(destinationList)
+
+    //get list first time 
+    useEffect(() => {
+        markerRef.current=[]
+        fetchDataAndSetListVictim(auth)
+    }, [])
+    
+    //get user current location
+    useEffect(() => {
+        intervalRefGetLocation = setInterval(() => {
+            getCurrentLocation().then((location) => {
+
+                setUserLocation(location.coords)
+                setRotateDegUser(location.coords.heading + headingOfMap - 45)
+
+            }).catch((error) => {
+                //Alert.alert("Lỗi", `${error.message}`)
+            })
+        }, 10000)
+        return () => clearInterval(intervalRefGetLocation)
+    }, [])
+
+    // set trace list when user move  
+    useEffect(() => {
+        if (isGo && userLocation){
+            const lastLocation = listTrace[listTrace.length-1]
+            if (getDistance(userLocation,lastLocation)>10) 
+                setListTrace([...listTrace, userLocation])
+        }
+    }, [isGo,userLocation])
+
+    //send location 
+    useEffect(() => {
+        userLocation?sendLocation(userLocation, auth):null
+    }, [userLocation])
+
+    
+    // refresh when destination list = 0
+    useEffect(()=>{
+        if (previousDestinationList?.length>0 && destinationList.length<=0){
+            refreshTrip()
+            mapRef.current?.animateCamera({
+                center: userLocation,
+                zoom: 14
+            })
+        }
+    },[destinationList])
+
+    //check connect to intenet
     useEffect(()=>{
         (netInfo.isConnected)?sendJourneyToServer(auth):null
     },[netInfo])
 
     //get a destination
     useEffect(() => {
-        if (userLocation && destinationItem && (!isShowClosestVictim) && isGo) {
-            
-            if (getDistance(userLocation, destinationItem) < app.minDistance) {
-                setIsShowClosestVictim(true)
-                Alert.alert("Đã rất gần người bị nạn", "Nhấn vào \"đã cứu được\" hoặc tick xanh ở lộ trình phía trên để xác nhận tiếp tục!", [
+        
+        if (userLocation && (destinationItem!=null) && isGo && (!isShowNotiClosestVictim)) {
+            const distance = getDistance(userLocation,destinationItem)
+            if ((distance < app.minDistance) && (destinationItem.later != true)) {
+                setIsShowNotiClosestVictim(true)
+                Alert.alert(`Đã rất gần người tên "${destinationItem.name}"`, "Nhấn vào \"đã cứu được\" hoặc tick xanh ở lộ trình phía trên để xác nhận tiếp tục!", [
                     {
                         style: 'cancel',
                         text: 'Để sau',
                         onPress: () => {
-                            setIsShowClosestVictim(false)
+                            setLater(destinationItem.id)
+                            setIsShowNotiClosestVictim(false)
                         }
                     },
                     {
                         text: 'Đã cứu được',
                         onPress: () => {
-                            setIsShowClosestVictim(false)
                             get1Destination(userLocation,destinationItem)
+                            setIsShowNotiClosestVictim(false)
                             sendJourneyToServer(auth)
                         }
                     }
                 ])
             }
         }
-    }, [newLocation])
-
-    //get list first time 
-    //internet
-    useEffect(() => {
-        markerRef.current=[]
-        fetchDataAndSetListVictim(auth)
-    }, [])
-    
-    //get user location
-    useEffect(() => {
-        intervalRefGetLocation = setInterval(() => {
-            getCurrentLocation().then((location) => {
-                const long = location.coords.longitude
-                const lat = location.coords.latitude
-                const loca = {
-                    longitude: long,
-                    latitude: lat
-                }
-
-                //setNewLocation(loca)
-                setNewLocation({ longitude: 106.6793707, latitude: 10.762533, })
-            }).catch((error) => {
-                Alert.alert("Lỗi", `${error.message}`)
-            })
-        }, 10000)
-        return () => clearInterval(intervalRefGetLocation)
-    }, [])
-    useEffect(() => {
-        if (newLocation) {
-
-            const rotate = getRhumbLineBearing(userLocation, newLocation) - 45
-
-            if (getDistance(userLocation, newLocation) > 10) {
-                setRotateDegUser(rotate + headingOfMap)
-                setListTrace([...listTrace, newLocation])
-                setUserLocation(newLocation)
-            }
-        }
-    }, [newLocation])
-
-    //send location : 5s / 1 lan 
-    //internet
-    useEffect(() => {
-        userLocation && sendLocation(userLocation, auth)
     }, [userLocation])
 
 
@@ -153,18 +165,18 @@ const Rescue = (props) => {
                             setIsModalLoading(false)
                             Alert.alert("Lỗi", `${error?.message}`)
                         })
-
                     }
                 }
             ])
         })
     }, [navigation])
 
-
+    useEffect(()=>{
+        selectItem && setIsShowInfoItem(true)
+    },[selectItem])
 
     const onPressMarker = (item) => {
         setSelectItem(item)
-        setIsShowInfoItem(true)
         mapRef.current?.animateCamera({ center: { longitude: item.longitude, latitude: item.latitude }, zoom: 15 })
     }
 
@@ -270,10 +282,17 @@ const Rescue = (props) => {
 
 
 
-                {listVictim && [...listVictim,...closerListVictim].map((item) => {
-                    const addRef = (el) => addToRef(el, item.id)
-                    return MarkerForItemList(item, onPressMarker, addRef)
-                })}
+                {(listVictim)?
+                    (isGo?
+                        [...destinationList,...closerListVictim].map((item)=>{
+                            const addRef = (el) => addToRef(el, item.id)
+                            return MarkerForItemList(item, onPressMarker, addRef)
+                        }) 
+                        :[...listVictim].map((item) => {
+                            const addRef = (el) => addToRef(el, item.id)
+                            return MarkerForItemList(item, onPressMarker, addRef)
+                        })
+                    ):null}
 
                 {destinationItem ? renderDirection() : null}
 
@@ -339,7 +358,9 @@ const mapFuncToProps = (dispatch) => {
         fetchDataAndSetListVictim: (auth) => dispatch(setList(auth)),
         addRefIndexToItem: (id, index) => dispatch(addRefIndexToItem(id, index)),
         get1Destination: (userLocation,destinationItem) => dispatch(get1Destination(userLocation,destinationItem)),
-        sendJourneyToServer: (auth)=>dispatch(sendJourneyToServer(auth))
+        sendJourneyToServer: (auth)=>dispatch(sendJourneyToServer(auth)),
+        setLater: (id)=>dispatch(setLaterForItemOfDestinationList(id)),
+        refreshTrip: ()=>dispatch(refreshTrip())
     }
 }
 

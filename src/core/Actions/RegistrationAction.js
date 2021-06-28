@@ -138,7 +138,6 @@ const fetchingRegistrationList = (auth) => {
         //     dispatch(finishFetchingRegistrationList())
         // }, 0)
 
-
         dispatch(startFetchingRegistrationList())
         getListRegistration(auth).then((result)=>{
             let stringId = ''

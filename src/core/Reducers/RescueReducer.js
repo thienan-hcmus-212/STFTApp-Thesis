@@ -2,8 +2,8 @@ import { actionsType } from "../../globals/constants"
 
 const initRescue= {
     userLocation: {
-        longitude: 106.6793707,
-        latitude: 10.762533,
+        latitude: 10.7675185,
+        longitude: 106.691865
     },
     boardSize: 9,
     listRefItem: [],
@@ -116,7 +116,14 @@ const RescueReducer = (state=initRescue,action) =>{
         case actionsType.rescue.setGobutton:
             return {
                 ...state,
-                isGo: action.t
+                isGo: action.t,
+                go: action.t?{
+                        ...state.go,
+                        listTrace: state.go.listTrace?[state.userLocation]:state.go.listTrace,
+                        startLocation: state.go.startLocation?state.userLocation:state.go.startLocation,
+                    }:{
+                        ...initGo
+                    }
             }
         case actionsType.rescue.setListTrace:
             return {
@@ -152,6 +159,19 @@ const RescueReducer = (state=initRescue,action) =>{
                     isClear: (state.memory.array.filter((item)=>{
                         return (item.destinationItem.id!=action.item.destinationItem.id)
                     }).length>0)?false:true
+                }
+            }
+        case actionsType.rescue.setLaterForItemOfDestinationList:
+            return {
+                ...state,
+                go:{
+                    ...state.go,
+                    destinationList: state.go.destinationList.map((item)=>{
+                        if (item.id==action.id){
+                            item.later = true
+                        }
+                        return item
+                    })
                 }
             }
     }

@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { connect } from 'react-redux'
 
 import { getRhumbLineBearing } from 'geolib'
-import { actionsType } from '../../../../../globals/constants'
+import { actionsType, app } from '../../../../../globals/constants'
 import { setDestinationList, setRescueUnit } from '../../../../../core/Actions/RescueAction'
 import ShowInfo from '../ShowInfo/show-info'
 
@@ -16,12 +16,6 @@ import ShowInfo from '../ShowInfo/show-info'
 const ViewBottomMap = (props) => {
 
     const delta = 0.009
-    const edgePadding = {
-        top:600,
-        bottom:300,
-        left: 9,
-        right: 9
-    }
 
     const { isShowInfoItem, setIsShowInfoItem, mapRef } = props
 
@@ -54,8 +48,7 @@ const ViewBottomMap = (props) => {
             }
         })
 
-        mapRef.current?.fitToCoordinates(listLocation,{edgePadding: edgePadding})
-        //mapRef.current?.animateCamera({ center: userLocation, zoom: 13 })
+        mapRef.current?.fitToCoordinates(listLocation,{edgePadding: app.edgePadding})
     }
 
 
@@ -94,7 +87,7 @@ const ViewBottomMap = (props) => {
         // }
         // mapRef.current?.animateToRegion(region)
         
-        mapRef.current?.fitToCoordinates([userLocation,destination],{ edgePadding: edgePadding })
+        mapRef.current?.fitToCoordinates([userLocation,destination],{ edgePadding: app.edgePadding })
 
 
         setStartLocation(userLocation)
@@ -112,7 +105,7 @@ const ViewBottomMap = (props) => {
                 latitude: i.latitude
             }
         })
-        mapRef.current?.fitToCoordinates(listLocation,{ edgePadding: edgePadding })
+        mapRef.current?.fitToCoordinates(listLocation,{ edgePadding: app.edgePadding })
         const findItem = destinationList.find((i)=>{
             return i.id==item.id
         })

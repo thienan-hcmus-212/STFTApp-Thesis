@@ -71,20 +71,6 @@ const listL = [
         eState: "STATE_EMERGENCY"
     },
     {
-        id: 6,
-        name: "nguyen ba kha",
-        longitude: 106.681,
-        latitude: 10.744,
-        ward: {
-            id: "00571",
-            name: "Xã Dương Xá",
-            type: "Xã"
-        },
-        phone: "0935624754",
-        numPerson: 0,
-        eState: "STATE_DANGER"
-    },
-    {
         id: 7,
         name: "Tran Phuong Linh",
         longitude: 106.691,
@@ -96,21 +82,7 @@ const listL = [
         },
         phone: "0935624755",
         numPerson: 0,
-        eState: "STATE_SAVED"
-    },
-    {
-        id: 8,
-        name: "Tran Phuong Linh So 2",
-        longitude: 106.69,
-        latitude: 10.73,
-        ward: {
-            id: "00571",
-            name: "Xã Dương Xá",
-            type: "Xã"
-        },
-        phone: "0935624755",
-        numPerson: 0,
-        eState: "STATE_UNAUTHENTICATED"
+        eState: "STATE_EMERGENCY"
     },
     {
         id: 9,
@@ -138,7 +110,7 @@ const listL = [
         },
         phone: "0935623455",
         numPerson: 0,
-        eState: "STATE_SAVED"
+        eState: "STATE_EMERGENCY"
     }
 ]
 
@@ -163,23 +135,30 @@ const sendCommitJourneyList = (list, auth) => new Promise((resolve, reject)=>{
     },1000)
 })
 
-const sendUnCommitJourneyList = (list, auth) => new Promise((resolve, reject)=>{
+const add1CommitToJourneyList = (item,auth) => new Promise((resolve,reject)=>{
+    resolve()
+})
+const remove1CommitfromJourneyList = (item,auth) => new Promise((resolve,reject)=>{
+    resolve()
+})
+
+const sendUnCommitJourneyList = (auth) => new Promise((resolve, reject)=>{
     setTimeout(()=>{
         resolve()
     },1000)
 })
 
 const saveDestination = (item, auth) => new Promise((resolve,reject)=>{
-    //resolve()
-    const axiosSave = axiosWithToken(auth)
-    axiosSave.post(`${app.api.rescuer.saveDestination}${item.id}`,null,{ params:{
-        numPeople: item.numPerson
-    }}).then(()=>{
-        resolve()
-    }).catch(()=>{
-        reject()
-    })
+    resolve()
+    // const axiosSave = axiosWithToken(auth)
+    // axiosSave.post(`${app.api.rescuer.saveDestination}${item.id}`,null,{ params:{
+    //     numPeople: item.numPerson
+    // }}).then(()=>{
+    //     resolve()
+    // }).catch(()=>{
+    //     reject()
+    // })
 })
 
 
-export { startRescue, stopRescue, sendLocation, getList, sendCommitJourneyList, sendUnCommitJourneyList, saveDestination}
+export { startRescue, stopRescue, sendLocation, getList, sendCommitJourneyList, sendUnCommitJourneyList, saveDestination, add1CommitToJourneyList, remove1CommitfromJourneyList}

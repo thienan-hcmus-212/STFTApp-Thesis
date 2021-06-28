@@ -21,7 +21,7 @@ const app = {
         RescueStartRescue: "Rescue_Start_rescue"
     },
     api: {
-        root: "http://34.126.187.47:8080/v1/api/",
+        root: "http://34.126.148.60:8080/v1/api/",
         signin: `auth/signin`,
         signup: `auth/signup`,
         user: {
@@ -40,7 +40,7 @@ const app = {
         }
     },
     apiImage:{
-        root: "http://34.126.187.47:8082/",
+        root: "http://34.126.148.60:8082/",
         user:{
             getImage:"pythonService/registrations/images/item/",
             getListImage: "pythonService/registrations/images/list/",
@@ -59,7 +59,13 @@ const app = {
         emergency: "STATE_EMERGENCY",
         danger: "STATE_DANGER"
     },
-    minDistance: 100
+    minDistance: 100,
+    edgePadding:{
+            top:600,
+            bottom:300,
+            left: 9,
+            right: 9
+    }
 }
 
 const actionsType = {
@@ -128,7 +134,8 @@ const actionsType = {
         setListTrace: "Rescue_set_list_trace",
         setRotateDegUser: 'Rescue_set_rotate_deg_user',
         addItemToMemory: 'Rescue_add_item_to_memory',
-        removeItemToMemory: 'Rescue_remove_item_from_memory'
+        removeItemToMemory: 'Rescue_remove_item_from_memory',
+        setLaterForItemOfDestinationList: 'Rescue_set_later_prop_for_item_of_destination_list'
     },
 }
 

@@ -2,19 +2,20 @@ import React from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native'
 import ItemRoute from './item-route'
 import { connect } from 'react-redux'
-import { setDestinationList, setRescueUnit } from '../../../../../core/Actions/RescueAction'
+import { get1Destination, sendJourneyToServer, setDestinationList, setRescueUnit } from '../../../../../core/Actions/RescueAction'
 import { actionsType } from '../../../../../globals/constants'
 
 import { getRhumbLineBearing } from 'geolib'
-import { sendCommitJourneyList } from '../../../../../core/Service/rescue'
+import { remove1CommitfromJourneyList, sendCommitJourneyList } from '../../../../../core/Service/rescue'
 
 const ShowRoute = (props) => {
-    const { list, mapRef, markerRef } = props
+    const { mapRef, markerRef } = props
 
     //redux
     const { auth } = props
     const { startLocation, listRefItem, destinationList, boardSize, isGo, userLocation, destinationItem } = props
-    const { setNewListDestination, setBoardSize, setGoButton, setSelectItem, setListVictim, setStartLocation } = props
+    const { setNewListDestination, setBoardSize, setGoButton, setSelectItem,setStartLocation,get1Destination,sendJourneyToServer } = props
+    
     const user = {
         name: 'vị trí bắt đầu'
     }
@@ -50,7 +51,6 @@ const ShowRoute = (props) => {
                     zoom: 18,
                 })
             }
-            setListVictim([...destinationList])
             setGoButton(true)
         }).catch((error) => {
             Alert.alert("Lỗi", `${error?.message}`)
@@ -71,6 +71,28 @@ const ShowRoute = (props) => {
         setStartLocation(userLocation)
         setNewListDestination(destinationList)
     }
+
+    const itemDone = (item)=>{
+        get1Destination(userLocation,destinationItem)
+        sendJourneyToServer(auth)
+    }
+    const itemImpossible = (item)=>{
+        Alert.alert("Lưu ý","Bạn thực sự không thể đến giải cứu địa điểm đó?",[
+            {
+                style:'cancel',
+                text:'không'
+            },
+            {
+                style:'destructive',
+                text:'đúng vậy',
+                onPress:()=>{
+                    remove1CommitfromJourneyList(item,auth).then(()=>{
+                        deleteItem(item)
+                    })
+                }
+            }
+        ])  
+    }
     return (
         <View style={styles.maxContainer}>
             <View style={boardSize == 0 ? { ...styles.size, backgroundColor: 'red' } : { ...styles.size, backgroundColor: 'green' }}>
@@ -85,13 +107,14 @@ const ShowRoute = (props) => {
                         focusItem={() => focusUser()}
                         index={-1}
                     ></ItemRoute>
-                    {list.map((item, index) => {
+                    {destinationList.map((item, index) => {
                         return <ItemRoute
                             key={`itemRoute${item.id}`}
                             item={item}
                             focusItem={() => focusMarker(item)}
-                            deleteItem={() => isGo ? null : deleteItem(item)}
+                            deleteItem={() => isGo ? itemImpossible(item) : deleteItem(item)}
                             index={index}
+                            done={()=>itemDone(item)}
                         ></ItemRoute>
                     })}
                 </ScrollView>
@@ -171,7 +194,9 @@ const mapFuncToProps = (dispatch) => {
         setSelectItem: (item) => dispatch(setRescueUnit(item, actionsType.rescue.setSelectItem)),
         setRotateDegUser: (deg) => dispatch(setRescueUnit(deg, actionsType.rescue.setRotateDegUser)),
         setListVictim: (list) => dispatch(setRescueUnit(list, actionsType.rescue.setListVictim)),
-        setStartLocation: (location) => dispatch(setRescueUnit(location, actionsType.rescue.setStartLocation))
+        setStartLocation: (location) => dispatch(setRescueUnit(location, actionsType.rescue.setStartLocation)),
+        get1Destination: (userLocation,item)=> dispatch(get1Destination(userLocation,item)),
+        sendJourneyToServer: (auth)=>dispatch(sendJourneyToServer(auth))
     }
 }
 

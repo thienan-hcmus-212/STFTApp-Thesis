@@ -3,13 +3,13 @@ import { View, StyleSheet, TouchableOpacity, Text } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 const ItemRoute = (props) => {
-    const { item, index, focusItem, deleteItem } = props
+    const { item, index, focusItem, deleteItem , done } = props
     return (
         <View style={styles.container}>
             <Text style={styles.index}>{index + 1}</Text>
             <TouchableOpacity
                 onPress={() => focusItem && focusItem()}
-                style={styles.title}
+                style={item.later?{...styles.title,backgroundColor:'green'}:styles.title}
             >
                 <Text>{item.name}</Text>
             </TouchableOpacity>
@@ -18,11 +18,22 @@ const ItemRoute = (props) => {
                     onPress={() => deleteItem()}
                 >
                     <Icon
-                        name='close'
-                        size={36}
+                        name='close-circle'
+                        size={27}
                         color='black'
                     ></Icon>
                 </TouchableOpacity>}
+            {index == 0 && item.later == true &&
+                <TouchableOpacity
+                    onPress={() => done()}
+                >
+                    <Icon
+                        name='checkmark-done-circle'
+                        size={27}
+                        color='green'
+                    ></Icon>
+                </TouchableOpacity>
+            }
         </View>
     )
 }
@@ -44,7 +55,7 @@ const styles = StyleSheet.create({
     index: {
         fontSize: 12,
         fontWeight: 'bold',
-        marginRight: 12,
+        marginRight: 9,
     }
 })
 

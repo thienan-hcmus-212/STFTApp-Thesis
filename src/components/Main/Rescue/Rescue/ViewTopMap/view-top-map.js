@@ -36,7 +36,7 @@ const ViewTopMap = (props) => {
                 {
                     text: 'đồng ý',
                     onPress: () => {
-                        sendUnCommitJourneyList(destinationList,auth).then(()=>{
+                        sendUnCommitJourneyList(auth).then(()=>{
                             refreshTrip()
                             if (mapRef.current) {
                                 mapRef.current.animateCamera({ center: userLocation, zoom: 12 })
@@ -61,7 +61,6 @@ const ViewTopMap = (props) => {
                 {isShowListRoute &&
                     <View style={styles.routeShowInfo}>
                         <ShowRoute 
-                            list={destinationList}
                             mapRef={mapRef}
                             markerRef={markerRef}
                         ></ShowRoute>

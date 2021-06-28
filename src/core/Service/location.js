@@ -1,4 +1,5 @@
 import * as Location from 'expo-location'
+import { getDistance } from 'geolib'
 import local from './insert_data.json'
 
 const data = {
@@ -125,4 +126,16 @@ const getCurrentLocation = () => new Promise((resolve,reject)=>{
     })
 
 })
-export { getNameLocation, getListHuyen, getListTinh, getListXa,getBaseRegion , getCurrentLocation}
+
+const getMinDistanceToGetItemOfList = (userLocation,destinationList)=>{
+    let minItem = destinationList[0]
+    let minDistance = getDistance(userLocation,destinationList[0])
+    destinationList.map((item)=>{
+        const distance = getDistance(userLocation,item)
+        minItem = minDistance>distance? item : minItem
+        minDistance = minDistance>distance? distance: minDistance
+    })
+
+    return { minItem, minDistance }
+}
+export { getNameLocation, getListHuyen, getListTinh, getListXa,getBaseRegion , getCurrentLocation, getMinDistanceToGetItemOfList}

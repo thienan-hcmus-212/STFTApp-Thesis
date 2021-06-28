@@ -94,18 +94,15 @@ const storeJourney = (item) => {
     }
 }
 
-const get1Destination = (userLocation, destinationItem) => {
+const get1Destination = (userLocation, item) => {
 
     return (dispatch, getState) => {
-        const { destinationList, startLocation, routeToDestinationList, listTrace } = getState().rescue.go
-        const { boardSize, listVictim } = getState().rescue
+        const { destinationList,destinationItem, startLocation, routeToDestinationList, listTrace } = getState().rescue.go
+        const { boardSize } = getState().rescue
         
-        const check=destinationList.find((item)=>{
-            return item.id == destinationItem.id
-        })
-        
+        const check= item.id == destinationItem.id
+    
         if (check){
-
             const itemStore = {
                 destinationItem: { ...destinationItem },
                 listTrace: [...listTrace],
@@ -178,5 +175,12 @@ const sendJourneyToServer = (auth) => {
     }
 }
 
+const setLaterForItemOfDestinationList = (id)=>{
+    return {
+        type : actionsType.rescue.setLaterForItemOfDestinationList,
+        id: id
+    }
+}
 
-export { setRescueUnit, setList, addRefIndexToItem, refreshTrip, setDestinationList, get1Destination, sendJourneyToServer }
+
+export { setRescueUnit, setList, addRefIndexToItem, refreshTrip, setDestinationList, get1Destination, sendJourneyToServer, setLaterForItemOfDestinationList }

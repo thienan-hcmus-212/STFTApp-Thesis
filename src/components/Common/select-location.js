@@ -51,7 +51,7 @@ const SelectLocation = (props) => {
             setHuyen(null)
             setOpenlHuyen(false)
         }
-        onFocus()
+        onFocus && onFocus()
     }, [t])
 
     useLayoutEffect(() => {
@@ -61,14 +61,14 @@ const SelectLocation = (props) => {
             setXa(null)
             setOpenlXa(false)
         }
-        onFocus()
+        onFocus && onFocus()
     }, [h])
 
     useEffect(() => {
         if (editable && x) {
-            setWardId(x)
+            setWardId && setWardId(x)
         }
-        onFocus()
+        onFocus && onFocus()
     }, [x])
 
     const location = () => {

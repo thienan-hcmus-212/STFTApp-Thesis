@@ -3,8 +3,10 @@ import { app } from '../../globals/constants'
 
 const getListRegistration = (auth) => new Promise((resolve, reject) => {
     const axiosGetList = axiosWithToken(auth)
-    axiosGetList.get(`${app.api.user.getRegistration}`, { timeout: 3000 }).then((result) => {
-        resolve(result.data.data)
+    
+    axiosGetList.get(`${app.api.user.getRegistration}`).then((result) => {
+        const data=[...result.data.data[0],...result.data.data[1]]
+        resolve(data)
     }).catch((error) => {
         error.response ?
             reject(error.response) :
