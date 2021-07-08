@@ -14,6 +14,7 @@ import SelectLocation from '../../../Common/select-location';
 import SetGPS from '../../../Common/set-gps';
 import { useFocusEffect } from '@react-navigation/native'
 import { searchItemByImage } from '../../../../core/Service/image';
+import { followRegistration } from '../../../../core/Service/registration';
 
 
 const InfoARegistration = (props) => {
@@ -39,7 +40,7 @@ const InfoARegistration = (props) => {
 
     const onPressAdd = (item) => {
 
-        Alert.alert("Chú ý", "Bạn sẽ chọn người gần giống người bạn muốn đăng kí", [
+        Alert.alert("Chú ý", "Bạn sẽ chọn người gần giống người bạn muốn đăng kí. \n Nếu không có sẽ lập tức đăng kí", [
             {
                 text: 'hủy',
                 style: 'cancel'
@@ -50,15 +51,23 @@ const InfoARegistration = (props) => {
                 onPress: () => {
                     searchItemByImage(auth, item).then((result) => {
                         setList(result)
-                        setStartItem(0)
-                        setIsModalCheck(true)
+                        if (Object.keys(result.registrations).length > 0){
+                            setStartItem(0)
+                            setIsModalCheck(true)
+                        } else {
+                            registerNow()
+                        }
+                    }).catch((error)=>{
+                        Alert.alert("Lỗi",`${error.message}`)
                     })
                 }
             }
         ])
     }
 
-
+    const registerNow =()=>{
+        onPressPost(auth)
+    }
     const onPressNot = () => {
         if (list.registrations[startItem + 1]) {
             setStartItem(startItem + 1)
@@ -77,18 +86,23 @@ const InfoARegistration = (props) => {
                     onPress: () => {
                         setIsModalCheck(false)
                         setStartItem(-1)
-                        //onPressPost(auth)
+                        registerNow()
                     }
                 }
             ])
         }
     }
-    const onPressOk = () => {
+    const onPressOk = (item) => {
         setIsModalCheck(false)
-        navigation.navigate(app.navigation.InfoRegistrationList)
+        followRegistration(auth,item).then(()=>{
+            navigation.navigate(app.navigation.InfoRegistrationList)
+        }).catch((error)=>{
+            Alert.alert("Lỗi", `${error.message}`)
+        })
+        
     }
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         setNullError()
         if (!editable) {
             setInfoOfItem(item)
@@ -102,8 +116,7 @@ const InfoARegistration = (props) => {
                 setNullError()
                 if (!editable) {
                     setInfoOfItem(item)
-                } else
-                    setNullInfo()
+                }
             }
         }, [])
     )
@@ -172,15 +185,10 @@ const InfoARegistration = (props) => {
                                         <OutlinedTextField
                                             label="Số"
                                             editable={false}
-                                            value={selectItem?.num_person}
+                                            value={selectItem?selectItem.num_person.toString():'0'}
                                         />
                                     </View>
                                 </View>
-
-                                <SelectLocation
-                                    wardId={selectItem?.ward_id}
-                                    editable={false}
-                                ></SelectLocation>
 
                                 <SetGPS
                                     longitude={selectItem?.longitude}
@@ -190,13 +198,14 @@ const InfoARegistration = (props) => {
                                     navigation={navigation}
                                     setLongitude={(t) => setInfoARegistration(t, actionsType.registration.setLongitude)}
                                     setLatitude={(t) => setInfoARegistration(t, actionsType.registration.setLatitude)}
+                                    setWardId={(t) => setInfoARegistration(t,actionsType.registration.setWardId)}
                                 />
                             </View>
                         </ScrollView>
                     </View>
                     <View style={styles.interact}>
                         <TouchableOpacity style={[styles.button, { backgroundColor: 'green' }]}
-                            onPress={() => onPressOk()}
+                            onPress={() => onPressOk(selectItem)}
                         >
                             <Text style={styles.text}>Người này</Text>
                         </TouchableOpacity>
@@ -234,7 +243,7 @@ const InfoARegistration = (props) => {
                                 <OutlinedTextField
                                     label="Số người"
                                     editable={editable}
-                                    value={numPerson == 0 ? null : numPerson.toString()}
+                                    value={numPerson?numPerson.toString():'0'}
                                     error={error.numPerson}
                                     keyboardType='phone-pad'
                                     onChangeText={(t) => setInfoARegistration(t, actionsType.registration.setNumPerson)}
@@ -252,13 +261,7 @@ const InfoARegistration = (props) => {
                             onFocus={() => setInfoARegistration(null, actionsType.registration.setErrorPhone)}
                         ></OutlinedTextField>
 
-                        <SelectLocation
-                            wardId={item ? item.ward.id : wardId}
-                            editable={editable}
-                            setWardId={(t) => setInfoARegistration(t, actionsType.registration.setWardId)}
-                            error={error.wardId}
-                            onFocus={() => setInfoARegistration(null, actionsType.registration.setErrorWardId)}
-                        ></SelectLocation>
+                        
 
                         <SetGPS
                             longitude={longitude}
@@ -268,6 +271,7 @@ const InfoARegistration = (props) => {
                             navigation={navigation}
                             setLongitude={(t) => setInfoARegistration(t, actionsType.registration.setLongitude)}
                             setLatitude={(t) => setInfoARegistration(t, actionsType.registration.setLatitude)}
+                            setWardId={(t) => setInfoARegistration(t, actionsType.registration.setWardId)}
                         />
                     </View>
                 </KeyboardAvoidingView>

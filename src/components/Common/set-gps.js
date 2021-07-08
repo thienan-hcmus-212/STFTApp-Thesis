@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { View, Text, Modal, StyleSheet, TouchableOpacity } from 'react-native'
 import MapView, { Marker } from 'react-native-maps';
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -6,29 +6,42 @@ import { getBaseRegion } from '../../core/Service/location';
 import { app } from '../../globals/constants';
 
 const SetGPS = (props) => {
-    const { navigation }=props
-    const { longitude, latitude, setLatitude, setLongitude, editable, wardId } = props
 
-    const [initialRegion,setInitialRegion] = useState()
+    const mapRef = useRef()
+    const { navigation } = props
+    const { longitude, latitude, setLatitude, setLongitude, editable, wardId, setWardId } = props
+
+
+    const [initialRegion, setInitialRegion] = useState()
     const [fullScreenShowMap, setFullScreenShowMap] = useState(false)
-    
-    useEffect(()=>{
+
+    useEffect(() => {
 
         const baseRegion = getBaseRegion(wardId)
         setInitialRegion(baseRegion)
 
-    },[])
+    }, [])
 
     const pickGPS = () => {
-       
-        navigation.navigate(app.navigation.ModalPickGPS,{
-            longitude:longitude,
-            latitude:latitude,
-            setLongitude:(t)=>setLongitude(t),
-            setLatitude:(t)=>setLatitude(t),
-            initialRegion:initialRegion
+
+        navigation.navigate(app.navigation.ModalPickGPS, {
+            longitude: longitude,
+            latitude: latitude,
+            setLongitude: (t) => setLongitude(t),
+            setLatitude: (t) => setLatitude(t),
+            initialRegion: initialRegion,
+            setWardId: (t) => setWardId(t)
         })
     }
+
+    useEffect(() => {
+        mapRef.current.animateToRegion({
+            latitude: latitude,
+            longitude: longitude,
+            latitudeDelta: 0.02,
+            longitudeDelta: 0.02,
+        })
+    }, [longitude, latitude])
 
     return (
         <>
@@ -41,14 +54,15 @@ const SetGPS = (props) => {
             >
                 <MapView
                     style={{ flex: 1 }}
-                    initialRegion={longitude ? {
+                    initialRegion={longitude && latitude ? {
                         longitude: longitude,
                         latitude: latitude,
                         latitudeDelta: 0.008,
                         longitudeDelta: 0.008,
                     } : null}
+
                 >
-                    {longitude ? (<Marker
+                    {longitude && latitude ? (<Marker
                         key={0}
                         coordinate={{ longitude: longitude, latitude: latitude }}
                     ></Marker>) : null}
@@ -63,26 +77,21 @@ const SetGPS = (props) => {
             </Modal>
 
             <Text style={{ margin: 20 }}>Tọa Độ</Text>
-            { editable && 
-                <TouchableOpacity 
+            {editable &&
+                <TouchableOpacity
                     style={styles.pickGPS}
                     onPress={() => pickGPS()}
-                    >
+                >
                     <Text>Cài đặt GPS</Text>
                 </TouchableOpacity>
             }
             <View style={{ borderWidth: 2 }}>
                 <MapView
                     style={styles.map}
-                    initialRegion={longitude ? {
-                        latitude: latitude,
-                        longitude: longitude,
-                        latitudeDelta: 0.02,
-                        longitudeDelta: 0.02,
-                    } : null}
+                    ref={mapRef}
                 >
 
-                    {longitude ? (<Marker
+                    {longitude && latitude ? (<Marker
                         key={0}
                         coordinate={{ longitude: longitude, latitude: latitude }}
                     ></Marker>) : null}
@@ -108,7 +117,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 12,
-        borderWidth:1,
+        borderWidth: 1,
         margin: 4,
         borderRadius: 12
     }

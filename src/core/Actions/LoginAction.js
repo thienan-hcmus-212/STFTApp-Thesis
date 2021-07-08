@@ -34,7 +34,7 @@ const onLoginFail = (error) =>{
     }
 }
 
-const onPressLogin = () => {
+const onPressLogin = (funcLogin) => {
 
     return (dispatch, getState) => {
         const { username, password } = getState().login
@@ -44,9 +44,10 @@ const onPressLogin = () => {
             username,
             password
         }, {
-            timeout: 3000
+            timeout: 1000
         }).then((response) => {
-                dispatch(onLoginSuccess(response))
+            funcLogin(response.data)
+            dispatch(onLoginSuccess(response))
         }).catch((error) => {
                 error.response?
                     dispatch(onLoginFail(error.response)):

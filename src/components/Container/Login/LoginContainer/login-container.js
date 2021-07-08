@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { connect } from 'react-redux'
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 
@@ -6,6 +6,7 @@ import InputText from '../../../Common/input-text';
 import LogoApp from '../../../Common/logo-app';
 import { app, stylesMain } from '../../../../globals/constants';
 import { onChangePassword, onChangeUsername, onPressLogin } from '../../../../core/Actions/LoginAction'
+import { AuthenticationContext } from '../../../Context/authentication-context';
 
 const LoginContainer = (props) => {
 
@@ -17,6 +18,7 @@ const LoginContainer = (props) => {
     const ref_password=useRef()
     const [focusPassword,setFocusPassword] = useState()
     const [focusLogin,setFocusLogin] = useState()
+    const {login} = useContext(AuthenticationContext)
 
     useEffect(()=>{
         const focusP=()=>ref_password.current?.focus()
@@ -24,6 +26,7 @@ const LoginContainer = (props) => {
         setFocusPassword(()=>focusP)
         setFocusLogin(()=>focusL)
     },[])
+    
     
 
     return (
@@ -52,7 +55,7 @@ const LoginContainer = (props) => {
             <Text style={styles.error_text}>{error?.message}</Text>
             <TouchableOpacity
                 style={{ ...stylesMain.button, backgroundColor: 'aqua', marginTop: 12 }}
-                onPress={() => onPressLogin()}
+                onPress={() => onPressLogin(login)}
             >
                 <Text>Login</Text>
             </TouchableOpacity>
@@ -99,7 +102,7 @@ const mapFuncToProps = (dispatch) => {
     return {
         onChangeUsername: (t) => dispatch(onChangeUsername(t)),
         onChangePassword: (t) => dispatch(onChangePassword(t)),
-        onPressLogin: () => dispatch(onPressLogin()),
+        onPressLogin: (funcLogin) => dispatch(onPressLogin(funcLogin)),
     }
 }
 

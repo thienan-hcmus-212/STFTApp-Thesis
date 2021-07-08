@@ -5,6 +5,7 @@ import loginReducer from './LoginReducer';
 import registerReducers from './RegisterReducer';
 import RegistrationReducers from './RegistrationReducer';
 import RescueReducer from './RescueReducer';
+import UserInformationReducer from './UserInforReducers';
 
 const rootReducer = combineReducers({
     login: loginReducer,
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
     auth: authenticationReducer,
     registration: RegistrationReducers,
     rescue: RescueReducer,
+    userInfo: UserInformationReducer
 })
 
 export default rootReducer

@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useCallback, useLayoutEffect, useReducer, useEffect, useState, createContext } from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 import { connect } from 'react-redux'
 
@@ -8,6 +8,10 @@ import Login from '../Authentication/Login/login';
 import Register from '../Authentication/Register/register'
 import MainScreenNavigation from '../Main/MainNavigation/main-screen-navigation';
 import { isValidToken } from '../../core/Service/authentication'
+
+
+import { storeAuthentication } from '../../core/Actions/AuthenticationAction';
+import { AuthenticationContext } from '../Context/authentication-context';
 
 const MainAppNavigationStack = createStackNavigator()
 
@@ -30,59 +34,78 @@ const MainAppNavigationReducer = (state, action) => {
                 isLoading: false,
                 isLogin: false,
             }
+        case actionsType.appNavigation.start:
+            return {
+                ...initMainApp
+            }
         default:
             throw new Error()
     }
 }
 
-
 const MainAppNavigation = (props) => {
 
     const [state, dispatch] = useReducer(MainAppNavigationReducer, initMainApp)
     const { auth } = props
+    const { loginSuccessed, logoutSuccessed } = props
 
-    const loginSuccess = () => {
+    const login = (data) => {
+        loginSuccessed(data)
         dispatch({ type: actionsType.appNavigation.loggedIn })
     }
-
+    const logout = () => {
+        dispatch({ type: actionsType.appNavigation.start })
+        logoutSuccessed()
+        setTimeout(() => {
+            dispatch({ type: actionsType.appNavigation.loggedOut })
+        }, 2000)
+    }
     useEffect(() => {
-        isValidToken(auth)
-            .then(() => {
-                //console.log("ok")
-                dispatch({ type: actionsType.appNavigation.loggedIn })
-            })
-            .catch((error) => {
-                //console.log(error.error)
-                dispatch({ type: actionsType.appNavigation.loggedOut })
-            })
+        dispatch({ type: actionsType.appNavigation.start })
+        setTimeout(() => {
+            isValidToken(auth)
+                .then(() => {
+                    console.log('ok')
+                    dispatch({ type: actionsType.appNavigation.loggedIn })
+                })
+                .catch((error) => {
+                    console.log(error)
+                    dispatch({ type: actionsType.appNavigation.loggedOut })
+                })
+        },0)
     }, [])
+
     return (
         //<MainAppNavigationStackProvider value = {navigation}>
         <>
             {state.isLoading ? <SplashScreen />
                 :
                 state.isLogin ?
-                    <MainAppNavigationStack.Navigator>
-                        <MainAppNavigationStack.Screen
-                            name={app.navigation.MainScreenNavigation}
-                            component={MainScreenNavigation}
-                            options={{ headerShown: false }}
-                        />
-                    </MainAppNavigationStack.Navigator>
+                    <AuthenticationContext.Provider value={{ logout }}>
+                        <MainAppNavigationStack.Navigator>
+                            <MainAppNavigationStack.Screen
+                                name={app.navigation.MainScreenNavigation}
+                                component={MainScreenNavigation}
+                                options={{ headerShown: false }}
+                            />
+                        </MainAppNavigationStack.Navigator>
+                    </AuthenticationContext.Provider>
                     :
-                    <MainAppNavigationStack.Navigator>
-                        <MainAppNavigationStack.Screen
-                            name={app.navigation.LoginScreen}
-                            component={Login}
-                            options={{ headerShown: false }}
-                            initialParams={{ loginSuccess }}
-                        />
-                        <MainAppNavigationStack.Screen
-                            name={app.navigation.RegisterScreen}
-                            component={Register}
-                            options={{ title: "Create account" }}
-                        />
-                    </MainAppNavigationStack.Navigator>}
+                    <AuthenticationContext.Provider value={{ login }}>
+                        <MainAppNavigationStack.Navigator>
+                            <MainAppNavigationStack.Screen
+                                name={app.navigation.LoginScreen}
+                                component={Login}
+                                options={{ headerShown: false }}
+                            />
+                            <MainAppNavigationStack.Screen
+                                name={app.navigation.RegisterScreen}
+                                component={Register}
+                                options={{ title: "Create account" }}
+                            />
+                        </MainAppNavigationStack.Navigator>
+                    </AuthenticationContext.Provider>
+            }
         </>
         //</MainAppNavigationStackProvider>
 
@@ -98,7 +121,8 @@ const mapStateToProps = (state) => {
 
 const mapFuncToProps = (dispatch) => {
     return {
-
+        loginSuccessed: (data) => dispatch(storeAuthentication(data)),
+        logoutSuccessed: () => dispatch({ type: actionsType.auth.deleteToken })
     }
 }
 

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { View, Text, StyleSheet, Modal, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { app } from '../../../../globals/constants'
 import ItemListRegistration from '../ListItemRegistration/list-item-registration'
 import { connect } from 'react-redux'
 import { deleteItemList, fetchingRegistrationList, setErrorStatus, setStatus } from '../../../../core/Actions/RegistrationAction'
+import { useFocusEffect } from '@react-navigation/native'
 
 const ListRegistration = (props) => {
     const { navigation } = props
@@ -34,6 +35,11 @@ const ListRegistration = (props) => {
     useEffect(() => {
         fetchList(auth)
     }, [])
+    useFocusEffect(
+        useCallback(()=>{
+            fetchList(auth)
+        },[])
+    )
 
     useEffect(() => {
         if (status.status && status.status == 200) {
@@ -49,7 +55,7 @@ const ListRegistration = (props) => {
 
     const addEmergencyCase = () => {
         setModalShowSelectAdd(false)
-        navigation.navigate(app.navigation.InfoRegistrationItemInfo, { editable: true, item: null })
+        //navigation.navigate(app.navigation.InfoRegistrationItemInfo, { editable: true, item: null })
     }
 
     const renderItem = ({ item }) => {
@@ -84,7 +90,7 @@ const ListRegistration = (props) => {
                             style={[styles.button, styles.buttonRed]}
                             onPress={() => addEmergencyCase()}
                         >
-                            <Text style={styles.textStyle}>Thêm trường hợp khẩn cấp (không thêm vào danh sách) </Text>
+                            <Text style={styles.textStyle}>Hủy</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

@@ -1,5 +1,5 @@
 import { actionsType, app } from "../../globals/constants"
-import { getListImage } from "../Service/image"
+import { getListImage, saveImageToServer } from "../Service/image"
 import { getListRegistration, addItemToListRegistration } from "../Service/registration"
 
 
@@ -193,7 +193,7 @@ const checkWardId = (wardId) =>{
     return null
 }
 
-const check = (item) => {
+const checkInput = (item) => {
     const errorNum = checkNumPersion(item.numPerson)
     const errorPhone = checkPhone(item.phone)
     const errorWardId= checkWardId(item.wardId);
@@ -207,15 +207,21 @@ const onPressPostRequest = (auth) => {
 
         const item = getState().registration.infoARegistration
 
-        const { errorNum, errorPhone, errorWardId } = check(item)
+        const { errorNum, errorPhone, errorWardId } = checkInput(item)
         if (errorNum || errorPhone || errorWardId) {
             dispatch(setInfoARegistration(errorNum, actionsType.registration.setErrorNumPersion))
             dispatch(setInfoARegistration(errorPhone, actionsType.registration.setErrorPhone))
             dispatch(setInfoARegistration(errorWardId, actionsType.registration.setErrorWardId))
             dispatch(setErrorStatus({status: 400, message: "Lỗi cú pháp"}))
         } else {
-            addItemToListRegistration(auth,item).then((status)=>{
-                dispatch(setStatus(status))
+            addItemToListRegistration(auth,item).then((result)=>{
+                const id = result.data.data.id
+                saveImageToServer(auth,item.image,id).then((status2)=>{
+                    dispatch(setStatus(status2))
+                }).catch((error)=>{
+                    console.log(error)
+                    dispatch(setErrorStatus(error))
+                })
             }).catch((error)=>{
                 console.log(error)
                 dispatch(setErrorStatus(error))
@@ -239,4 +245,4 @@ const setStatus = (status) =>{
     }
 }
 
-export { setInfoARegistration, setInfoOfItem, deleteItemList, fetchingRegistrationList, setNullInfo, onPressPostRequest, setErrorStatus, setStatus }
+export { setInfoARegistration, setInfoOfItem, deleteItemList, fetchingRegistrationList, setNullInfo, onPressPostRequest, setErrorStatus, setStatus}

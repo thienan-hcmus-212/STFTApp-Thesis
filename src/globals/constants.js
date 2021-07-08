@@ -3,9 +3,10 @@ import { StyleSheet } from 'react-native'
 
 
 const app = {
-    Name : "Flood App",
+    Name : "Rescue App",
     Icon : require('../../assets/app_icon.jpg'),
     navigation: {
+        Main:'Main_App',
         SplashScreen:'SplashScreen',
         LoginScreen:'LoginScreen',
         RegisterScreen:'RegisterScreen',
@@ -18,16 +19,22 @@ const app = {
         Rescue: "Map_Rescue",
         RescueTab: "Rescue_Tab",
         RescueRegistration: "Rescue_Registration",
-        RescueStartRescue: "Rescue_Start_rescue"
+        RescueStartRescue: "Rescue_Start_rescue",
+        UserInformation: "User_Information",
+        ShowInfomationUser:"User_Show_infomation_user",
+        EditInformation:"User_Edit_information",
+        ListFlood: "User_Show_List_Flood"
     },
     api: {
-        root: "http://34.126.148.60:8080/v1/api/",
+        root: "http://34.126.92.44:8080/v1/api/",
         signin: `auth/signin`,
         signup: `auth/signup`,
         user: {
             getInfo: `accounts/`,
             getRegistration: `registrations/MyRegistrations`,
-            postRegistration: `registrations/users`
+            followRegistration: `registrations/MyRegistrations?`,
+            postRegistration: `registrations/users`,
+            getFloodNoti: `floodNotifications`
         },
         rescuer: {
             registerLocation: 'locationRegistrations/wards/',
@@ -40,11 +47,12 @@ const app = {
         }
     },
     apiImage:{
-        root: "http://34.126.148.60:8082/",
+        root: "http://34.126.92.44:8082/",
         user:{
             getImage:"pythonService/registrations/images/item/",
             getListImage: "pythonService/registrations/images/list/",
-            searchImage: "pythonService/registrations/searching/"
+            searchImage: "pythonService/registrations/searching/",
+            saveImage:`pythonService/registrations/images/`
         }
     },
     role: {
@@ -71,10 +79,12 @@ const app = {
 const actionsType = {
     appNavigation:{
         loggedIn: "MAIN_APP_NAVIGATION_LOGGEDIN",
-        loggedOut: "MAIN_APP_NAVIGATION_LOGGEDOUT"
+        loggedOut: "MAIN_APP_NAVIGATION_LOGGEDOUT",
+        start:'MAIN_APP_START'
     },
     auth:{
         storeAuthentication: 'STORE_AUTHENTICATION',
+        deleteToken: 'AUTH_DELETE_TOKEN'
     },
     login: {
         onChangeUsername: 'ON_CHANGE_TEXT_USERNAME',
@@ -137,9 +147,20 @@ const actionsType = {
         removeItemToMemory: 'Rescue_remove_item_from_memory',
         setLaterForItemOfDestinationList: 'Rescue_set_later_prop_for_item_of_destination_list'
     },
+    userinfo:{
+        setEmail:'UserInfo_Set_Password',
+        setPhone:'UserInfo_Set_Phone',
+        setFirstName:"UserInfo_Set_First_Name",
+        setLastName:"UserInfo_Set_Last_Name",
+        setAllInfo:"UserInfo_Set_all_Info"
+    }
 }
 
 const regexTypes={
+    name:{
+        regex:/^[a-zA-Z]+(\s[a-zA-Z]+)*$/,
+        messageErr:"your name is invalid"
+    },
     email:{
         regex: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
         messageErr: "Your email address is invalid"

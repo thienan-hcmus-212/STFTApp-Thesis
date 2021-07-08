@@ -150,6 +150,7 @@ const RegistrationReducers = (state = initRegistration, action) => {
             }
 
         case actionsType.registration.setErrorStatus:
+            
             return {
                 ...state,
                 infoARegistration: {

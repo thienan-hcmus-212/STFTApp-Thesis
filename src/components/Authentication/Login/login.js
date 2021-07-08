@@ -11,12 +11,8 @@ import { storeAuthentication } from '../../../core/Actions/AuthenticationAction'
 const Login = (props) => {
 
     const { status, isLoading, error, data } = props.status
-    const { navigation ,storeAuth } = props
-    useEffect(() => {
-        (status) ?
-            checkStatus(status) ? loginSuccess(data, storeAuth, props.route.params.loginSuccess) : loginFail(error) :
-            null
-    }, [status])
+    const { navigation } = props
+    
 
     return (
         <View style={{ flex: 1 }}>
@@ -47,7 +43,7 @@ const mapStateToProps = (state) => {
 
 const mapFuncToProps = (dispatch) => {
     return {
-        storeAuth: (data) => dispatch(storeAuthentication(data))
+
     }
 }
 

@@ -1,0 +1,151 @@
+{
+    "type": "FeatureCollection",
+    "query": [
+        106.63032099854263,
+        10.891740105871051
+    ],
+    "features": [
+        {
+            "id": "locality.14384913160012300",
+            "type": "Feature",
+            "place_type": [
+                "locality"
+            ],
+            "relevance": 1,
+            "properties": {
+                "wikidata": "Q10840864"
+            },
+            "text_vi": "Đông Thạnh",
+            "language_vi": "vi",
+            "place_name_vi": "Đông Thạnh, Huyện Hóc Môn, Thành phố Hồ Chí Minh, Việt Nam",
+            "text": "Đông Thạnh",
+            "language": "vi",
+            "place_name": "Đông Thạnh, Huyện Hóc Môn, Thành phố Hồ Chí Minh, Việt Nam",
+            "bbox": [
+                106.617309570313,
+                10.8846187591553,
+                106.670570373535,
+                10.9199419021608
+            ],
+            "center": [
+                106.64222,
+                10.90333
+            ],
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.64222,
+                    10.90333
+                ]
+            },
+            "context": [
+                {
+                    "id": "place.18898555853441390",
+                    "text_vi": "Huyện Hóc Môn",
+                    "text": "Huyện Hóc Môn"
+                },
+                {
+                    "id": "region.10003062871057210",
+                    "wikidata": "Q1854",
+                    "short_code": "VN-SG",
+                    "text_vi": "Thành phố Hồ Chí Minh",
+                    "language_vi": "vi",
+                    "text": "Thành phố Hồ Chí Minh",
+                    "language": "vi"
+                },
+                {
+                    "id": "country.9472354165536500",
+                    "wikidata": "Q881",
+                    "short_code": "vn",
+                    "text_vi": "Việt Nam",
+                    "language_vi": "vi",
+                    "text": "Việt Nam",
+                    "language": "vi"
+                }
+            ]
+        },
+        {
+            "id": "region.10003062871057210",
+            "type": "Feature",
+            "place_type": [
+                "region",
+                "place"
+            ],
+            "relevance": 1,
+            "properties": {
+                "wikidata": "Q1854",
+                "short_code": "VN-SG"
+            },
+            "text_vi": "Thành phố Hồ Chí Minh",
+            "language_vi": "vi",
+            "place_name_vi": "Thành phố Hồ Chí Minh, Việt Nam",
+            "text": "Thành phố Hồ Chí Minh",
+            "language": "vi",
+            "place_name": "Thành phố Hồ Chí Minh, Việt Nam",
+            "bbox": [
+                106.356193100424,
+                10.2284366105414,
+                107.028029998206,
+                11.1600469526051
+            ],
+            "center": [
+                106.63333,
+                10.81667
+            ],
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.63333,
+                    10.81667
+                ]
+            },
+            "context": [
+                {
+                    "id": "country.9472354165536500",
+                    "wikidata": "Q881",
+                    "short_code": "vn",
+                    "text_vi": "Việt Nam",
+                    "language_vi": "vi",
+                    "text": "Việt Nam",
+                    "language": "vi"
+                }
+            ]
+        },
+        {
+            "id": "country.9472354165536500",
+            "type": "Feature",
+            "place_type": [
+                "country"
+            ],
+            "relevance": 1,
+            "properties": {
+                "wikidata": "Q881",
+                "short_code": "vn"
+            },
+            "text_vi": "Việt Nam",
+            "language_vi": "vi",
+            "place_name_vi": "Việt Nam",
+            "text": "Việt Nam",
+            "language": "vi",
+            "place_name": "Việt Nam",
+            "bbox": [
+                102.144796000004,
+                8.31419660096922,
+                109.5694718,
+                23.3922699957244
+            ],
+            "center": [
+                108.339537475899,
+                14.3154241771087
+            ],
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    108.339537475899,
+                    14.3154241771087
+                ]
+            }
+        }
+    ],
+    "attribution": "NOTICE: © 2021 Mapbox and its suppliers. All rights reserved. Use of this data is subject to the Mapbox Terms of Service (https://www.mapbox.com/about/maps/). This response and the information it contains may not be retained. POI(s) provided by Foursquare."
+}

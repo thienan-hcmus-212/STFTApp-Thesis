@@ -115,18 +115,18 @@ const listL = [
 ]
 
 const getList=(auth)=>new Promise((resolve,reject)=>{
-    resolve(listL)
+    //resolve(listL)
     
-    // const axiosGetList = axiosWithToken(auth)
-    // axiosGetList.get(app.api.rescuer.getList).then((response)=>{
-    //     resolve(response.data.data)
-    // }).catch((error)=>{
-    //     console.log(error.response)
-    //     if (error.response){
-    //         reject(error.response.data)
-    //     }
-    //     reject({status: 400, message: error})
-    // })
+    const axiosGetList = axiosWithToken(auth)
+    axiosGetList.get(app.api.rescuer.getList).then((response)=>{
+        resolve(response.data.data)
+    }).catch((error)=>{
+        console.log(error.response)
+        if (error.response){
+            reject(error.response.data)
+        }
+        reject({status: 400, message: error})
+    })
 })
 
 const sendCommitJourneyList = (list, auth) => new Promise((resolve, reject)=>{
@@ -149,16 +149,18 @@ const sendUnCommitJourneyList = (auth) => new Promise((resolve, reject)=>{
 })
 
 const saveDestination = (item, auth) => new Promise((resolve,reject)=>{
-    resolve()
-    // const axiosSave = axiosWithToken(auth)
-    // axiosSave.post(`${app.api.rescuer.saveDestination}${item.id}`,null,{ params:{
-    //     numPeople: item.numPerson
-    // }}).then(()=>{
-    //     resolve()
-    // }).catch(()=>{
-    //     reject()
-    // })
+    //resolve()
+    const axiosSave = axiosWithToken(auth)
+    axiosSave.post(`${app.api.rescuer.saveDestination}${item.id}`,null,{ params:{
+        numPeople: item.numPerson
+    }}).then(()=>{
+        resolve()
+    }).catch(()=>{
+        reject()
+    })
 })
+
+
 
 
 export { startRescue, stopRescue, sendLocation, getList, sendCommitJourneyList, sendUnCommitJourneyList, saveDestination, add1CommitToJourneyList, remove1CommitfromJourneyList}

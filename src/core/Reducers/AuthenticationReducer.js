@@ -12,6 +12,10 @@ const authenticationReducer = (state=initAuth,action) =>{
                 username: action.username,
                 token: action.token
             }
+        case actionsType.auth.deleteToken:
+            return {
+                ...initAuth
+            }
     }
     return state
 }

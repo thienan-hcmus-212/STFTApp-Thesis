@@ -3,12 +3,13 @@ import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack'
 import { app } from '../../../globals/constants';
-import Satistic from '../Satistic/satistic';
+import Satistic from '../Satistic/MainSatistic/satistic';
 import InfoRegistration from '../InfoRegistration/MainInfoRegistration/info-registration'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import PickGPS from '../InfoRegistration/PickGPS/pick-gps';
 import MainRescue from '../Rescue/MainRescue/MainRescue';
 import Rescue from '../Rescue/Rescue/rescue';
+import UserInformation from '../UserInformation/MainUserInfo/user-information';
 
 const Tab = createBottomTabNavigator()
 const Stack = createStackNavigator()
@@ -22,14 +23,16 @@ const MainTabNavigation = () => {
 
           if (route.name === app.navigation.InfoRegistrationMainTab) {
             iconName = focused
-              ? 'ios-information-circle'
-              : 'ios-information-circle-outline';
+              ? 'people-circle'
+              : 'people-circle-outline';
           } else if (route.name === app.navigation.SatisticMainTab) {
             iconName = focused ? 'ios-list' : 'ios-list';
           } else if (route.name === app.navigation.RescueTab) {
             iconName = focused
-              ? 'ios-information-circle'
-              : 'ios-information-circle-outline';
+              ? 'earth'
+              : 'earth-outline';
+          } else if (route.name === app.navigation.UserInformation) {
+            iconName = focused ? 'information-circle' : 'information-circle-outline'
           }
 
           // You can return any component that you like here!
@@ -44,7 +47,11 @@ const MainTabNavigation = () => {
         inactiveTintColor: 'gray',
       }}
     >
-
+      <Tab.Screen
+        name={app.navigation.SatisticMainTab}
+        component={Satistic}
+        options={{ title: "Thông tin" }}
+      />
       <Tab.Screen
         name={app.navigation.InfoRegistrationMainTab}
         component={InfoRegistration}
@@ -56,17 +63,18 @@ const MainTabNavigation = () => {
         options={{ title: "Cứu" }}
       />
       <Tab.Screen
-        name={app.navigation.SatisticMainTab}
-        component={Satistic}
-        options={{ title: "Thống kê" }}
+        name={app.navigation.UserInformation}
+        component={UserInformation}
+        options={{ title: "Thông tin cá nhân" }}
       />
+
     </Tab.Navigator>
   )
 }
 
 const MainScreenNavigation = () => {
   return (
-    <Stack.Navigator mode="modal" initialRouteName={app.navigation.Rescue}>
+    <Stack.Navigator mode="modal">
       <Stack.Screen
         name={"Main"}
         component={MainTabNavigation}
@@ -81,8 +89,8 @@ const MainScreenNavigation = () => {
       <Stack.Screen
         name={app.navigation.Rescue}
         component={Rescue}
-        options={{headerShown: false}}
-        initialParams={{boardSize: 4}}
+        options={{ headerShown: false }}
+        initialParams={{ boardSize: 4 }}
       />
 
     </Stack.Navigator>

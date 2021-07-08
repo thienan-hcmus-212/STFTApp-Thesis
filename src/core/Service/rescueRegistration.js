@@ -45,19 +45,19 @@ const deleteRegistration = (auth,wardId) => new Promise((resolve,reject)=>{
 })
 
 const checkIsAccept = (auth) => new Promise((resolve,reject)=>{
-    setTimeout(()=>resolve(true),1000)
+    //setTimeout(()=>resolve(true),1000)
 
-    // const axiosGetRegis= axiosWithToken(auth)
-    // axiosGetRegis.get(app.api.rescuer.getRegistration).then((result)=>{
-    //     (result.data.data.estate=='STATE_UNAUTHENTICATED')?
-    //         resolve(false):
-    //         resolve(true)
-    // }).catch((error)=>{
-    //     if (error.response){
-    //         reject(error.response.data)
-    //     }
-    //     reject({status: 400, message: error})
-    // })
+    const axiosGetRegis= axiosWithToken(auth)
+    axiosGetRegis.get(app.api.rescuer.getRegistration).then((result)=>{
+        (result.data.data.estate=='STATE_UNAUTHENTICATED')?
+            resolve(false):
+            resolve(true)
+    }).catch((error)=>{
+        if (error.response){
+            reject(error.response.data)
+        }
+        reject({status: 400, message: error})
+    })
 })
 
 

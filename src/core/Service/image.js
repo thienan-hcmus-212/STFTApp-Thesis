@@ -96,29 +96,79 @@ const list = {
         "3": "images/4.jpg"
     }
 }
-const searchItemByImage=(auth,item)=>new Promise((resolve,reject)=>{
-    resolve(list)
 
-    // const axiosGetListImage = axiosImage(auth)
-    // //const stringId = item.name+";"+item.lonngitude+';'+item.latitude+';'+item.numPerson+';'+item.wardId+';'+item.phone
-    // const stringId = 'NguyenHien;10;11;2;32248;123456'
-    
-    // const uri = item.image  //item.image.slice(0,7)+item.image.slice(8)
-    // const nameImage = uri.split("/").pop()
-    // const type = `image/${nameImage.substring(nameImage.length-3)}`
+const checkOnlyItem = (result,auth)=>{
+    const registrations = result.data[0]["registrations"]
+    console.log(result.data[0])
+    const arrayKey = Object.keys(registrations)
+    arrayKey.map((key)=>{
+        if (registrations[key]["__data__"]["create_by_username"]==auth.username){
+            delete registrations[key]
+        }
+    })
+    return result.data[0]
+}
 
-    // const data = new FormData();
-    // data.append('image',{
-    //     uri:uri,
-    //     name:nameImage,
-    //     type:type
-    // })
-    
-    // axiosGetListImage.get(`${app.apiImage.user.searchImage}${stringId}`,data).then((result)=>{
-    //     console.log(result)
-    // }).catch((error)=>{
-    //     console.log(error.response)
-    // })
+const saveImageToServer = (auth,image,id)=> new Promise((resolve,reject)=>{
+    const axiosSaveImage = axiosImage(auth)
+    if (!image) resolve({status: 200})
+    const uri = image
+    const nameImage = uri.split('/').pop()
+    const type = `image/${nameImage.substring(nameImage.length-3)}`
+
+    const data= new FormData();
+    data.append('image',{
+        uri: uri,
+        name: nameImage,
+        type: type
+    })
+    axiosSaveImage.post(`${app.apiImage.user.saveImage}${id}`,data).then((result)=>{
+        resolve(result.status)
+    }).catch((error)=>{
+        error.response?
+            reject({message: error.response.data.detail}):
+            reject({message: error})
+    })
 })
 
-export { getListImage,searchItemByImage }
+const searchItemByImage=(auth,item)=>new Promise((resolve,reject)=>{
+
+    const axiosGetListImage = axiosImage(auth)
+    const stringId = item.name+";"+item.longitude+';'+item.latitude+';'+item.numPerson+';'+item.wardId+';'+item.phone;
+    (item.name && item.latitude && item.longitude && item.numPerson && item.wardId && item.phone )?null:reject({message: "bạn chưa nhập hết các trường bên dưới"})
+    if (item.image){
+        const uri = item.image
+        const nameImage = uri.split("/").pop()
+        const type = `image/${nameImage.substring(nameImage.length-3)}`
+
+        const data = new FormData();
+        data.append('image',{
+            uri:uri,
+            name:nameImage,
+            type:type
+        })
+
+        axiosGetListImage.post(`${app.apiImage.user.searchImage}image/${stringId}`,data).then((result)=>{
+            const data = checkOnlyItem(result,auth)
+            resolve(data)
+        }).catch((error)=>{
+            error.response?
+                reject({message: error.response.data.detail}):
+                reject({message: error})
+        })
+
+    } else {
+
+        axiosGetListImage.post(`${app.apiImage.user.searchImage}noImage/${stringId}`).then((result)=>{
+            const data = checkOnlyItem(result,auth)
+            resolve(data)
+        }).catch((error)=>{
+            error.response?
+                reject({message: error.response.data.detail}):
+                reject({message: error})
+        })
+
+    }    
+})
+
+export { getListImage,searchItemByImage,saveImageToServer }
