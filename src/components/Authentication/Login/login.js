@@ -4,16 +4,12 @@ import { View, StyleSheet, ActivityIndicator, Alert } from 'react-native'
 import { connect } from 'react-redux'
 import LoginContainer from '../../Container/Login/LoginContainer/login-container'
 
-import { checkStatus, loginSuccess, loginFail } from '../../../core/Service/authentication'
-import { storeAuthentication } from '../../../core/Actions/AuthenticationAction'
-
 
 const Login = (props) => {
 
     const { status, isLoading, error, data } = props.status
     const { navigation } = props
     
-
     return (
         <View style={{ flex: 1 }}>
             {isLoading ?

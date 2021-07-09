@@ -11,6 +11,7 @@ const checkStatus = (status) => {
 }
 
 const isValidToken = (auth) => new Promise((resolve, reject) => {
+    //setTimeout(()=>reject(),1000)
     //resolve(changeRole(userInfor).roles)
     const axiosCheckAuth = axiosWithToken(auth)
     axiosCheckAuth.get(`${app.api.user.getInfo}${auth.username}`, { timeout: 3000 })
@@ -94,4 +95,4 @@ const changeUserInfo = (auth,item)=>new Promise((resolve,reject)=>{
     })
 })
 
-export { checkStatus, isValidToken, getInfo, changeUserInfo }
+export { checkStatus, isValidToken, getInfo, changeUserInfo, changeRole }

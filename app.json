@@ -5,11 +5,6 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/rescue-app.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -18,7 +13,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.thesis.rescueapp",
+      "bundleIdentifier": "com.hcmus.thesis.rescueapp",
       "buildNumber": "1.0.0"
     },
     "android": {
@@ -26,7 +21,7 @@
         "foregroundImage": "./assets/rescue-app.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.thesis.rescueapp",
+      "package": "com.hcmus.thesis.rescueapp",
       "versionCode": 1
     },
     "web": {

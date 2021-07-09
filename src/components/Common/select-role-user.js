@@ -32,7 +32,7 @@ const SelectRoleUser = (props) => {
     },[])
     return (
         <View style={styles.constainer}>
-            <Text>You are :</Text>
+            <Text>Bạn là :</Text>
             <View style={styles.checkboxContainer}>
                 <View style={styles.checkboxItem}>
                     <CheckBox
@@ -42,20 +42,8 @@ const SelectRoleUser = (props) => {
                             changeRoleUser(isCheck, app.role.user)
                         }}
                     />
-                    <Text>A user</Text>
+                    <Text>Người dùng</Text>
                 </View>
-                <View style={styles.checkboxItem}>
-                    <CheckBox
-                        value={selectAuthority}
-                        onValueChange={(isCheck) => {
-                            setSelectAuthority(isCheck);
-                            changeRoleUser(isCheck, app.role.authority)
-                        }}
-                    />
-                    <Text>A authority</Text>
-                </View>
-            </View>
-            <View style={styles.checkboxContainer}>
                 <View style={styles.checkboxItem}>
                     <CheckBox
                         value={selectRescuer}
@@ -64,21 +52,9 @@ const SelectRoleUser = (props) => {
                             changeRoleUser(isCheck, app.role.rescuer)
                         }}
                     />
-                    <Text>A rescuer</Text>
+                    <Text>Đội cứu hộ</Text>
                 </View>
-
-                <View style={styles.checkboxItem}>
-                    <CheckBox
-                        value={selectVolunteer}
-                        onValueChange={(isCheck) => {
-                            setSelectVolunteer(isCheck);
-                            changeRoleUser(isCheck, app.role.volunteer)
-                        }}
-                    />
-                    <Text>A volunteer</Text>
-                </View>
-
-
+                
             </View>
         </View>
     )

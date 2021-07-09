@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native'
 
 
 const app = {
-    Name : "Rescue App",
+    Name : "Cứu hộ Lũ Lụt",
     Icon : require('../../assets/app_icon.jpg'),
     navigation: {
         Main:'Main_App',
@@ -160,23 +160,23 @@ const actionsType = {
 const regexTypes={
     name:{
         regex:/^[a-zA-Z]+(\s[a-zA-Z]+)*$/,
-        messageErr:"your name is invalid"
+        messageErr:"Tên bạn không phù hợp"
     },
     email:{
         regex: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-        messageErr: "Your email address is invalid"
+        messageErr: "Email không chính xác"
     },
     phone:{
         regex: /(84|0[3|5|7|8|9])+([0-9]{8})\b/,
-        messageErr: "Your phone is invalid in VietNam"
+        messageErr: "Số điện thoại không đúng"
     },
     username:{
-        regex: /([a-zA-Z0-9_]{8,40})/,
-        messageErr: "Username can be include 0-9, a-z, A-Z, _. And not less than 8"
+        regex: /([a-zA-Z0-9_]{3,40})/,
+        messageErr: "Tên đăng nhập gồm các chữ cái a-z A-z 0-9 và không nhỏ hơn 3"
     },
     password:{
         regex: /[a-zA-Z0-9]{8,40}/,
-        messageErr: "Password can be include 0-9, a-z, A-Z. And not less than 8"
+        messageErr: "Mật khẩu gồm các chữ cái a-z A-z 0-9 và không nhỏ hơn 8"
     }
 }
 

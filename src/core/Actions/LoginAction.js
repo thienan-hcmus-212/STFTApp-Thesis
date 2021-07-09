@@ -26,6 +26,12 @@ const onLoginSuccess = (response) =>{
 }
 
 const onLoginFail = (error) =>{
+    switch (error?.data?.error){
+        case "Unauthorized":
+            error.data.message = "Sai tên đăng nhập hoặc mật khẩu"
+            break;
+    }
+
     return {
         type: actionsType.login.loginFail, 
         error: error.data || {message: error.toString()}, 
@@ -40,19 +46,25 @@ const onPressLogin = (funcLogin) => {
         const { username, password } = getState().login
         dispatch({ type: actionsType.login.startLogin })
 
-        axiosNoToken.post(`${app.api.signin}`, {
-            username,
-            password
-        }, {
-            timeout: 1000
-        }).then((response) => {
-            funcLogin(response.data)
-            dispatch(onLoginSuccess(response))
-        }).catch((error) => {
-                error.response?
-                    dispatch(onLoginFail(error.response)):
-                    dispatch(onLoginFail(error))
-            })
+        if (username && password) {
+            axiosNoToken.post(`${app.api.signin}`, {
+                username,
+                password
+            }, {
+                timeout: 1000
+            }).then((response) => {
+                funcLogin(response.data)
+                dispatch(onLoginSuccess(response))
+            }).catch((error) => {
+                    error.response?
+                        dispatch(onLoginFail(error.response)):
+                        dispatch(onLoginFail(error))
+                })
+        } else {
+            dispatch(onLoginFail("Bạn chưa nhập hết các trường"))
+        }
+
+        
     }
 }
 

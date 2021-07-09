@@ -36,7 +36,7 @@ const LoginContainer = (props) => {
             </View>
             
             <InputText
-                name="Username"
+                name="Tên đăng nhập"
                 val={username}
                 onChangeText={onChangeUsername} 
                 ref={ref_username}
@@ -46,7 +46,7 @@ const LoginContainer = (props) => {
                 />
 
             <InputText
-                name="Password"
+                name="Mật khẩu"
                 val={password}
                 onChangeText={onChangePassword}
                 ref={ref_password}
@@ -57,14 +57,14 @@ const LoginContainer = (props) => {
                 style={{ ...stylesMain.button, backgroundColor: 'aqua', marginTop: 12 }}
                 onPress={() => onPressLogin(login)}
             >
-                <Text>Login</Text>
+                <Text>Đăng nhập</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
                 style={{ ...stylesMain.button, backgroundColor: 'white' }}
                 onPress={() => navigation.navigate(app.navigation.RegisterScreen)}
             >
-                <Text>Register</Text>
+                <Text>Đăng kí</Text>
             </TouchableOpacity>
         </View>
     )

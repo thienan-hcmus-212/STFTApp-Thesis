@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { View, StyleSheet, Text, TouchableOpacity, ScrollView, StatusBar } from 'react-native'
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView, StatusBar,Keyboard } from 'react-native'
 import { connect } from 'react-redux'
 import { actionsType, stylesMain } from '../../../../globals/constants'
 import InputText from '../../../Common/input-text'
@@ -14,9 +14,12 @@ const RegisterContainer = (props) => {
     const inputRef = useRef([])
 
     const focusNextInput = (i) => {
-        return inputRef.current[i + 1] ? inputRef.current[i + 1].focus() : onPressRegister();
+        return inputRef.current[i + 1] ? inputRef.current[i + 1].focus() : onPressOk()
     };
 
+    const onPressOk = ()=>{
+        onPressRegister();
+    }
     const addToRef = (el) => {
         const length = inputRef.current.length
         return el ? (inputRef.current.includes(el) ? null : inputRef.current[length] = el) : null
@@ -35,7 +38,7 @@ const RegisterContainer = (props) => {
             
             <InputText
                 style={styles.inputText}
-                name="User name"
+                name="Tên Đăng nhập"
 
                 val={username}
                 onChangeText={onChangeUsername}
@@ -44,32 +47,35 @@ const RegisterContainer = (props) => {
                 addToRef={addToRef}
                 onSubmit={()=>focusNextInput(0)}
             />
+
             <InputText
                 style={styles.inputText}
-                name="First name"
-
-                val={firstname}
-                onChangeText={onChangeFirstname}
-
-                ref={inputRef}
-                addToRef={addToRef}
-                onSubmit={()=>focusNextInput(1)}
-            />
-            <InputText
-                style={styles.inputText}
-                name="Last name"
+                name="Họ"
 
                 val={lastname}
                 onChangeText={onChangeLastname}
 
                 ref={inputRef}
                 addToRef={addToRef}
-                onSubmit={()=>focusNextInput(2)}
+                onSubmit={()=>focusNextInput(1)}
             />
 
             <InputText
                 style={styles.inputText}
-                name="Phone"
+                name="Tên"
+
+                val={firstname}
+                onChangeText={onChangeFirstname}
+
+                ref={inputRef}
+                addToRef={addToRef}
+                onSubmit={()=>focusNextInput(2)}
+            />
+            
+
+            <InputText
+                style={styles.inputText}
+                name="Số điện thoại"
 
                 val={phone}
                 onChangeText={onChangePhone}
@@ -94,7 +100,7 @@ const RegisterContainer = (props) => {
 
             <InputText
                 style={styles.inputText}
-                name="Password"
+                name="Mật khẩu"
 
                 val={password}
                 onChangeText={onChangePassword}
@@ -107,7 +113,7 @@ const RegisterContainer = (props) => {
 
             <InputText
                 style={styles.inputText}
-                name="Confirm password"
+                name="Nhập lại mật khẩu"
 
                 val={passwordConfirm}
                 onChangeText={onChangeConfirmPassword}
@@ -120,11 +126,9 @@ const RegisterContainer = (props) => {
 
             <TouchableOpacity
                 style={{ ...stylesMain.button, backgroundColor: 'aqua', marginTop: 12 }}
-                onPress={() => {
-                    onPressRegister();
-                }}
+                onPress={() => onPressOk()}
             >
-                <Text>Register</Text>
+                <Text>Đăng kí</Text>
             </TouchableOpacity>
 
             <View style={{ marginBottom: 12 }}></View>

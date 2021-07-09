@@ -33,7 +33,10 @@ const Register = (props) => {
                     }: null,
                     {
                         text: "Cancel",
-                        style: "cancel"
+                        style: "cancel",
+                        onPress: ()=>{
+                            resetStatus();
+                        }
                     }
                 ]) : null
     }, [status])

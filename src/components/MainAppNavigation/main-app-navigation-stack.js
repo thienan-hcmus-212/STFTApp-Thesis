@@ -48,36 +48,45 @@ const MainAppNavigation = (props) => {
     const [state, dispatch] = useReducer(MainAppNavigationReducer, initMainApp)
     const { auth } = props
     const { loginSuccessed, logoutSuccessed } = props
-    const [roles,setRoles] = useState({})
+    const [roles, setRoles] = useState({})
 
     const login = (data) => {
+        let role = {}
+        data.roles.map((i) => {
+            if (i.toLowerCase() == app.role.user)
+                role = {
+                    ...role,
+                    user: true
+                }
+            if (i.toLowerCase() == app.role.rescuer)
+                role = {
+                    ...role,
+                    rescuer: true
+                }
+        })
+        setRoles(role)
         loginSuccessed(data)
         dispatch({ type: actionsType.appNavigation.loggedIn })
     }
     const logout = () => {
         dispatch({ type: actionsType.appNavigation.start })
         logoutSuccessed()
-        setTimeout(() => {
-            dispatch({ type: actionsType.appNavigation.loggedOut })
-        }, 2000)
+        dispatch({ type: actionsType.appNavigation.loggedOut })
     }
     useEffect(() => {
         dispatch({ type: actionsType.appNavigation.start })
-        setTimeout(() => {
-            isValidToken(auth)
-                .then((roles) => {
-                    setRoles(roles)
-                    dispatch({ type: actionsType.appNavigation.loggedIn })
-                })
-                .catch((error) => {
-                    console.log(error)
-                    dispatch({ type: actionsType.appNavigation.loggedOut })
-                })
-        },0)
+        isValidToken(auth)
+            .then((roles) => {
+                setRoles(roles)
+                dispatch({ type: actionsType.appNavigation.loggedIn })
+            })
+            .catch((error) => {
+                console.log(error)
+                dispatch({ type: actionsType.appNavigation.loggedOut })
+            })
     }, [])
 
     return (
-        //<MainAppNavigationStackProvider value = {navigation}>
         <>
             {state.isLoading ? <SplashScreen />
                 :
@@ -102,15 +111,12 @@ const MainAppNavigation = (props) => {
                             <MainAppNavigationStack.Screen
                                 name={app.navigation.RegisterScreen}
                                 component={Register}
-                                options={{ title: "Create account" }}
+                                options={{ title: "Đăng kí tài khoản" }}
                             />
                         </MainAppNavigationStack.Navigator>
                     </AuthenticationContext.Provider>
             }
         </>
-        //</MainAppNavigationStackProvider>
-
-
     )
 }
 
