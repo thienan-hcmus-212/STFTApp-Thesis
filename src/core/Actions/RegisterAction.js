@@ -45,7 +45,6 @@ const onRegisterFail=(error) =>{
 }
 
 const filterError = (info) =>{
-    console.log(info)
     if (info.password!=info.passwordConfirm) return "Mật khẩu nhập lại không khớp"
     if (!regexTypes.phone.regex.test(info.phone)) return regexTypes.phone.messageErr
     if (!regexTypes.email.regex.test(info.email)) return regexTypes.email.messageErr
