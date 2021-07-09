@@ -13,7 +13,7 @@ const ShowRoute = (props) => {
 
     //redux
     const { auth } = props
-    const { startLocation, listRefItem, destinationList, boardSize, isGo, userLocation, destinationItem } = props
+    const { startLocation, listRefItem, destinationList, boardSize, isGo, userLocation, destinationItem, listVictim } = props
     const { setNewListDestination, setBoardSize, setGoButton, setSelectItem,setStartLocation,get1Destination,sendJourneyToServer } = props
     
     const user = {
@@ -40,7 +40,7 @@ const ShowRoute = (props) => {
     }
 
     const onPressGo = () => {
-        sendCommitJourneyList(destinationList, auth).then(() => {
+        sendCommitJourneyList(destinationList, listVictim, auth).then(() => {
             const endLocation = (destinationItem) ? ({ longitude: destinationItem.longitude, latitude: destinationItem.latitude }) : userLocation
             if (mapRef.current) {
                 const heading = getRhumbLineBearing(userLocation, endLocation)
@@ -183,7 +183,8 @@ const mapStateToProps = (state) => {
         userLocation: state.rescue.userLocation,
         destinationItem: state.rescue.go.destinationItem,
         rotateDegUser: state.rescue.go.rotateDegUser,
-        auth: state.auth
+        auth: state.auth,
+        listVictim: state.rescue.listVictim
     }
 }
 const mapFuncToProps = (dispatch) => {

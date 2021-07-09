@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack'
@@ -10,11 +10,13 @@ import PickGPS from '../InfoRegistration/PickGPS/pick-gps';
 import MainRescue from '../Rescue/MainRescue/MainRescue';
 import Rescue from '../Rescue/Rescue/rescue';
 import UserInformation from '../UserInformation/MainUserInfo/user-information';
+import { AuthenticationContext } from '../../Context/authentication-context';
 
 const Tab = createBottomTabNavigator()
 const Stack = createStackNavigator()
 
 const MainTabNavigation = () => {
+  const {roles} = useContext(AuthenticationContext)
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -52,16 +54,16 @@ const MainTabNavigation = () => {
         component={Satistic}
         options={{ title: "Thông tin" }}
       />
-      <Tab.Screen
+      {roles.user?<Tab.Screen
         name={app.navigation.InfoRegistrationMainTab}
         component={InfoRegistration}
         options={{ title: "Thông tin đăng kí" }}
-      />
-      <Tab.Screen
+      />:null}
+      {roles.rescuer?<Tab.Screen
         name={app.navigation.RescueTab}
         component={MainRescue}
         options={{ title: "Cứu" }}
-      />
+      />:null}
       <Tab.Screen
         name={app.navigation.UserInformation}
         component={UserInformation}

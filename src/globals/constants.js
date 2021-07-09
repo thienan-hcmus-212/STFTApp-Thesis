@@ -43,7 +43,8 @@ const app = {
             sendGPS: 'rescuerSaving/GPS',
             getList: 'rescuerSaving/destinations',
             getRegistration: 'locationRegistrations/myRegistration/rescuer',
-            saveDestination: 'rescuerSaving/saveDestinations/'
+            saveDestination: 'rescuerSaving/saveDestinations/',
+            getListNear: `rescuerSaving/peopleNearRescuer`
         }
     },
     apiImage:{

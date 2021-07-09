@@ -20,12 +20,11 @@ const ViewBottomMap = (props) => {
     const { isShowInfoItem, setIsShowInfoItem, mapRef } = props
 
     //redux
-    const { destinationItem, selectItem, destinationList, startLocation} = props.data
-    const { userLocation, boardSize, isGo, listVictim } = props
+    const { destinationItem, selectItem, destinationList, startLocation } = props.data
+    const { userLocation, boardSize, isGo, listVictim, closerListVictim } = props
 
     //redux func
-    const { setDestinationList, setStartLocation, setBoardSize } = props
-
+    const { setDestinationList, setStartLocation, setBoardSize, setCloserListVictim } = props
 
     const onPressFocus = () => {
         const endLocation = (destinationItem) ? ({ longitude: destinationItem.longitude, latitude: destinationItem.latitude }) : userLocation
@@ -41,33 +40,33 @@ const ViewBottomMap = (props) => {
     }
 
     const getCurrentGPS = () => {
-        const listLocation = [userLocation,...listVictim].map((item)=>{
+        const listLocation = [userLocation, ...listVictim].map((item) => {
             return {
                 longitude: item.longitude,
                 latitude: item.latitude
             }
         })
 
-        mapRef.current?.fitToCoordinates(listLocation,{edgePadding: app.edgePadding})
+        mapRef.current?.fitToCoordinates(listLocation, { edgePadding: app.edgePadding })
     }
 
 
-    const setFinalDestinationList = (item,list) =>{
-        if ( boardSize >= item.numPerson){
+    const setFinalDestinationList = (item, list) => {
+        if (boardSize >= item.numPerson) {
             setDestinationList(list)
-            setBoardSize(boardSize-item.numPerson)
+            setBoardSize(boardSize - item.numPerson)
         } else {
-            Alert.alert('Thông báo',"Số chỗ trống không đủ để chứa hết người. Thuyền bạn thực sự có thể chứa hêt?",[
+            Alert.alert('Thông báo', "Số chỗ trống không đủ để chứa hết người. Thuyền bạn thực sự có thể chứa hêt?", [
                 {
-                    style:'cancel',
+                    style: 'cancel',
                     text: 'Hủy'
                 },
                 {
-                    style:'destructive',
+                    style: 'destructive',
                     text: 'Đúng',
-                    onPress: ()=>{
+                    onPress: () => {
                         setDestinationList(list)
-                        setBoardSize(boardSize-item.numPerson)
+                        setBoardSize(boardSize - item.numPerson)
                     }
                 }
             ])
@@ -86,43 +85,109 @@ const ViewBottomMap = (props) => {
         //     latitudeDelta: Math.abs(item.latitude - userLocation.latitude),
         // }
         // mapRef.current?.animateToRegion(region)
-        
-        mapRef.current?.fitToCoordinates([userLocation,destination],{ edgePadding: app.edgePadding })
+
+        mapRef.current?.fitToCoordinates([userLocation, destination], { edgePadding: app.edgePadding })
 
 
         setStartLocation(userLocation)
 
-        setFinalDestinationList(item,[item])
+        setFinalDestinationList(item, [item])
 
 
     }
 
-    const onAddDestinationList = (item) =>{
-        
-        const listLocation =[startLocation,...destinationList,item].map((i)=>{
+    const onAddDestinationList = (item) => {
+
+        const listLocation = [startLocation, ...destinationList, item].map((i) => {
             return {
                 longitude: i.longitude,
                 latitude: i.latitude
             }
         })
-        mapRef.current?.fitToCoordinates(listLocation,{ edgePadding: app.edgePadding })
-        const findItem = destinationList.find((i)=>{
-            return i.id==item.id
+        mapRef.current?.fitToCoordinates(listLocation, { edgePadding: app.edgePadding })
+        const findItem = destinationList.find((i) => {
+            return i.id == item.id
         })
-        if (!findItem){
+
+        const closer = closerListVictim.filter((i)=>{
+            return i.id!=item.id
+        });
+        setCloserListVictim(closer);
+        
+        if (!findItem) {
             setStartLocation(userLocation)
-            setFinalDestinationList(item,[...destinationList,item])
+            setFinalDestinationList(item, [...destinationList, item])
+        } else {
+            const desList = destinationList.filter((item)=>{
+                return item.id!=findItem.id
+            })
+            setStartLocation(userLocation)
+            setFinalDestinationList(item, [...desList, item])
         }
     }
-    
+
+
+    const onPushToTopDestinationList = (item) => {
+
+        const listLocation = [startLocation, ...destinationList, item].map((i) => {
+            return {
+                longitude: i.longitude,
+                latitude: i.latitude
+            }
+        })
+        mapRef.current?.fitToCoordinates(listLocation, { edgePadding: app.edgePadding })
+        const findItem = destinationList.find((i) => {
+            return i.id == item.id
+        })
+
+        const closer = closerListVictim.filter((i)=>{
+            return i.id!=item.id
+        });
+        setCloserListVictim(closer);
+
+        if (!findItem) {
+            setStartLocation(userLocation)
+            setFinalDestinationList(item, [item, ...destinationList])
+        } else {
+            const desList = destinationList.filter((item)=>{
+                return item.id!=findItem.id
+            })
+            setStartLocation(userLocation)
+            setFinalDestinationList(item, [item, ...desList])
+        }
+    }
+
+    const onPressPushToTop = () => {
+        if (selectItem) {
+            Alert.alert("Lưu ý", "Bạn muốn ưu tiên cứu người này trước hay cứu sau?", [
+                {
+                    text: 'Hủy',
+                    style: 'cancel',
+                },
+                {
+                    text: "Cứu sau",
+                    onPress: () => {
+                        onAddDestinationList(selectItem)
+                    }
+                },
+                {
+                    text: "Cứu trước",
+                    onPress: () => {
+                        onPushToTopDestinationList(selectItem)
+                    }
+                }
+            ])
+        }
+    }
+
     const moreInfoRef = useRef()
 
-    
 
-    const onPressDirectionButton = (item)=>{
-        if (selectItem){
-            if (destinationItem){
-                return onAddDestinationList(selectItem) 
+
+    const onPressDirectionButton = (item) => {
+        if (selectItem) {
+            if (destinationItem) {
+                return onAddDestinationList(selectItem)
             }
             return onStartDirectionPress(selectItem)
         }
@@ -205,11 +270,11 @@ const ViewBottomMap = (props) => {
 
                         </View>
                         <TouchableOpacity
-                            style={isGo?{...styles.directionButton,backgroundColor:'gray'}:{...styles.directionButton,backgroundColor:'red'}}
-                            onPress={() => isGo?null:onPressDirectionButton()}
+                            style={isGo ? { ...styles.directionButton, backgroundColor: 'red' } : { ...styles.directionButton, backgroundColor: '#FF8700' }}
+                            onPress={() => isGo ? onPressPushToTop() : onPressDirectionButton()}
                         >
                             <Icon
-                                name={isGo?"alert-rhombus":(destinationItem? "map-marker-plus" : 'directions')}
+                                name={isGo ? "alert-rhombus" : (destinationItem ? "map-marker-plus" : 'directions')}
                                 size={70}
                                 color='white'
                             ></Icon>
@@ -300,7 +365,8 @@ const mapStateToProps = (state) => {
         userLocation: state.rescue.userLocation,
         boardSize: state.rescue.boardSize,
         isGo: state.rescue.isGo,
-        listVictim: state.rescue.listVictim
+        listVictim: state.rescue.listVictim,
+        closerListVictim: state.rescue.closerListVictim
     }
 }
 
@@ -309,8 +375,8 @@ const mapFuncToProps = (dispatch) => {
         setDestinationList: (list) => dispatch(setDestinationList(list)),
         setStartLocation: (location) => dispatch(setRescueUnit(location, actionsType.rescue.setStartLocation)),
         setRouteToDestinationList: (array) => dispatch(setRescueUnit(array, actionsType.rescue.setRouteToDestinationList)),
-        setBoardSize: (size)=> dispatch(setRescueUnit(size,actionsType.rescue.setBoardSize)),
-        
+        setBoardSize: (size) => dispatch(setRescueUnit(size, actionsType.rescue.setBoardSize)),
+        setCloserListVictim: (array) => dispatch(setRescueUnit(array,actionsType.rescue.setCloserListVictim))
     }
 }
 

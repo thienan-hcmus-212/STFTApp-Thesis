@@ -4,16 +4,16 @@ import { Marker } from 'react-native-maps'
 import { app } from '../../../../../globals/constants'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
-const description = (state)=>{
-    switch (state) {
-        case app.state_victim.unAuthentica:
-            return "Chưa xác thực"
-        case app.state_victim.emergency:
-            return "Nguy hiểm, đã xác thực"
-        case app.state_victim.safe:
-            return "An toàn"
-        case app.state_victim.danger:
-            return "Nguy hiểm, chưa xác thực"
+const description = (order )=>{
+    switch (order) {
+        case 0:
+            return "Trường hợp khẩn cấp, có người bệnh"
+        case 1:
+            return "Trường hợp có nhiều trẻ em"
+        case 2:
+            return "Trường hợp có nhiều người già và phụ nữ"
+        case 3:
+            return "Trường hợp gặp nạn thông thường"
     }
     return "Chưa xác thực"
 }
@@ -22,7 +22,7 @@ const MarkerForItemList = (item,onPressMarker,addRef) => {
     const defaultMarker = (color,addRef) => (
             <Marker
                 title={item.name}
-                description={description(item.eState)}
+                description={description(item.order)}
                 key={item.id}
                 coordinate={{ longitude: item.longitude, latitude: item.latitude }}
                 pinColor={color}
@@ -49,15 +49,15 @@ const MarkerForItemList = (item,onPressMarker,addRef) => {
             </View>
         </Marker>
     )
-    switch (item.eState) {
-        case app.state_victim.unAuthentica:
-            return unAuthenticaMarker('white','black',addRef)
-        case app.state_victim.emergency:
-            return defaultMarker('red',addRef)
-        case app.state_victim.safe:
-            return defaultMarker('green',addRef)
-        case app.state_victim.danger:
-            return unAuthenticaMarker('white','red',addRef)
+    switch (item.order) {
+        case 0:
+            return defaultMarker('#FF0000',addRef)
+        case 1:
+            return defaultMarker('#FF4200',addRef)
+        case 2:
+            return defaultMarker('#FF9E00',addRef)
+        case 3:
+            return defaultMarker('#FFDC00',addRef)
     }
     return defaultMarker('red',addRef)
 

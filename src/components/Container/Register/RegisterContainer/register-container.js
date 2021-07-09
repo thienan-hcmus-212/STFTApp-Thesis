@@ -9,7 +9,7 @@ import SelectRoleUser from '../../../Common/select-role-user'
 
 const RegisterContainer = (props) => {
 
-    const { username, password, firstname, lastname, phone, email, passwordConfirm } = props.data
+    const { username, password, firstname, lastname, phone, email, passwordConfirm, role } = props.data
     const { changeRoleUser ,onChangeUsername, onChangePassword, onChangeEmail, onChangeFirstname, onChangeLastname, onChangePhone, onChangeConfirmPassword, onPressRegister } = props
     const inputRef = useRef([])
 
@@ -30,6 +30,7 @@ const RegisterContainer = (props) => {
 
             <SelectRoleUser
                 changeRoleUser={changeRoleUser}
+                role={role}
             />
             
             <InputText

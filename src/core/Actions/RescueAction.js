@@ -1,5 +1,5 @@
 import { actionsType, app } from '../../globals/constants'
-import { getList, saveDestination } from '../Service/rescue'
+import { getList, getNearUser, saveDestination, sendCommitJourneyList } from '../Service/rescue'
 
 import { getDistance } from 'geolib'
 import { getDirectionList } from '../Service/map-direction'
@@ -41,6 +41,7 @@ const refreshGo = () => {
     }
 
 }
+
 
 const refreshTrip = () => {
     return (dispatch, getState) => {
@@ -182,5 +183,20 @@ const setLaterForItemOfDestinationList = (id)=>{
     }
 }
 
+const getCloserListVictim = (auth)=>{
+    return (dispatch,getState)=>{
+        const {closerListVictim} = getState().rescue
+        sendCommitJourneyList([],closerListVictim,auth).then(()=>{
+            getNearUser(auth).then((data)=>{
+                dispatch(setRescueUnit(data,actionsType.rescue.setCloserListVictim))
+            }).catch((error)=>{
+                console.log(error.response)
+            })
+        }).catch((error)=>{
+            console.log(error.response)
+        })
+    }
+}
 
-export { setRescueUnit, setList, addRefIndexToItem, refreshTrip, setDestinationList, get1Destination, sendJourneyToServer, setLaterForItemOfDestinationList }
+
+export {  getCloserListVictim , setRescueUnit, setList, addRefIndexToItem, refreshTrip, setDestinationList, get1Destination, sendJourneyToServer, setLaterForItemOfDestinationList }

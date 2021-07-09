@@ -48,6 +48,7 @@ const MainAppNavigation = (props) => {
     const [state, dispatch] = useReducer(MainAppNavigationReducer, initMainApp)
     const { auth } = props
     const { loginSuccessed, logoutSuccessed } = props
+    const [roles,setRoles] = useState({})
 
     const login = (data) => {
         loginSuccessed(data)
@@ -64,8 +65,8 @@ const MainAppNavigation = (props) => {
         dispatch({ type: actionsType.appNavigation.start })
         setTimeout(() => {
             isValidToken(auth)
-                .then(() => {
-                    console.log('ok')
+                .then((roles) => {
+                    setRoles(roles)
                     dispatch({ type: actionsType.appNavigation.loggedIn })
                 })
                 .catch((error) => {
@@ -81,7 +82,7 @@ const MainAppNavigation = (props) => {
             {state.isLoading ? <SplashScreen />
                 :
                 state.isLogin ?
-                    <AuthenticationContext.Provider value={{ logout }}>
+                    <AuthenticationContext.Provider value={{ logout, roles }}>
                         <MainAppNavigationStack.Navigator>
                             <MainAppNavigationStack.Screen
                                 name={app.navigation.MainScreenNavigation}

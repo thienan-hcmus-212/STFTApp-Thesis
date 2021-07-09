@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const token = "pk.eyJ1IjoidGhpZW5hbjIxMiIsImEiOiJja3BmenpnYncyY2Y1MzFueGlxMTBvamR2In0.i9YGIWK_u8W8i-xS9-Rfjg"
+const token = "pk.eyJ1IjoidGhpZW5hbjIxMiIsImEiOiJja3F0eDRtdW0wMmRyMnVvMzltbG83NDkzIn0.qA-0GYbv-d_H2p00TLNC6Q"
 const url = (array) =>{
     let root ='https://api.mapbox.com/directions/v5/mapbox/walking/'
     array.map((item)=>{

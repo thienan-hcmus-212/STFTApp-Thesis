@@ -4,7 +4,7 @@ import MapView, { Marker, Polyline } from 'react-native-maps'
 import { getCurrentLocation } from '../../../../core/Service/location'
 
 import { connect } from 'react-redux'
-import { setRescueUnit, setList, addRefIndexToItem, get1Destination, sendJourneyToServer, setLaterForItemOfDestinationList, refreshTrip } from '../../../../core/Actions/RescueAction'
+import { setRescueUnit, setList, addRefIndexToItem, get1Destination, sendJourneyToServer, setLaterForItemOfDestinationList, refreshTrip, getCloserListVictim } from '../../../../core/Actions/RescueAction'
 import { actionsType, app } from '../../../../globals/constants'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { stopRescue, sendLocation } from '../../../../core/Service/rescue'
@@ -39,6 +39,7 @@ const Rescue = (props) => {
     const mapRef = useRef()
     const markerRef = useRef([])
     let intervalRefGetLocation = useRef()
+    let intervalRefGetList = useRef()
 
     //core
     const { navigation, auth } = props
@@ -49,7 +50,7 @@ const Rescue = (props) => {
 
     //funtion
     const { setUserLocation, setSelectItem, setListTrace, setRotateDegUser } = props.setData
-    const { fetchDataAndSetListVictim, addRefIndexToItem, get1Destination, sendJourneyToServer , setLater, refreshTrip} = props
+    const { fetchDataAndSetListVictim, addRefIndexToItem, get1Destination, sendJourneyToServer , setLater, refreshTrip, getCloserListVictim} = props
 
     //state
     const [isModalLoading, setIsModalLoading] = useState(false)
@@ -60,12 +61,24 @@ const Rescue = (props) => {
     const [headingOfMap, setHeadingOfMap] = useState(0)
 
     const previousDestinationList = usePrevious(destinationList)
-
     //get list first time 
     useEffect(() => {
         markerRef.current=[]
         fetchDataAndSetListVictim(auth)
     }, [])
+
+
+    useEffect(()=>{
+        if (isGo){
+            intervalRefGetList=setInterval(()=>{
+                getCloserListVictim(auth)
+            },30000)
+            return ()=> clearInterval(intervalRefGetList)
+        } else {
+            
+        }
+
+    },[isGo])
     
     //get user current location
     useEffect(() => {
@@ -78,7 +91,7 @@ const Rescue = (props) => {
             }).catch((error) => {
                 //Alert.alert("Lỗi", `${error.message}`)
             })
-        }, 10000)
+        }, 5000)
         return () => clearInterval(intervalRefGetLocation)
     }, [])
 
@@ -360,7 +373,8 @@ const mapFuncToProps = (dispatch) => {
         get1Destination: (userLocation,destinationItem) => dispatch(get1Destination(userLocation,destinationItem)),
         sendJourneyToServer: (auth)=>dispatch(sendJourneyToServer(auth)),
         setLater: (id)=>dispatch(setLaterForItemOfDestinationList(id)),
-        refreshTrip: ()=>dispatch(refreshTrip())
+        refreshTrip: ()=>dispatch(refreshTrip()),
+        getCloserListVictim: (auth)=>dispatch(getCloserListVictim(auth))
     }
 }
 

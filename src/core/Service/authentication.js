@@ -11,17 +11,17 @@ const checkStatus = (status) => {
 }
 
 const isValidToken = (auth) => new Promise((resolve, reject) => {
-    resolve()
-    // const axiosCheckAuth = axiosWithToken(auth)
-    // axiosCheckAuth.get(`${app.api.user.getInfo}${auth.username}`, { timeout: 3000 })
-    //     .then((response) => {
-    //         resolve(response.status)
-    //     })
-    //     .catch((error) => {
-    //         error.response ?
-    //             reject({ status: error.response.status, error: error.response.data }) :
-    //             reject({ status: 400, error: { message: error.toString() } })
-    //     })
+    //resolve(changeRole(userInfor).roles)
+    const axiosCheckAuth = axiosWithToken(auth)
+    axiosCheckAuth.get(`${app.api.user.getInfo}${auth.username}`, { timeout: 3000 })
+        .then((response) => {
+            resolve(changeRole(response.data.data).roles)
+        })
+        .catch((error) => {
+            error.response ?
+                reject({ status: error.response.status, error: error.response.data }) :
+                reject({ status: 400, error: { message: error.toString() } })
+        })
 })
 const userInfor = {
     "username": "xuanvy1",
@@ -31,20 +31,12 @@ const userInfor = {
     "email": "xuanvy12345678@gmail.com",
     "roles": [
         {
-            "id": 1,
-            "name": "ROLE_USER"
-        },
-        {
-            "id": 2,
-            "name": "ROLE_AUTHORITY"
-        },
-        {
             "id": 3,
             "name": "ROLE_RESCUER"
         },
         {
             "id": 4,
-            "name": "ROLE_VOLUNTEER"
+            "name": "ROLE_USER"
         }
     ]
 }

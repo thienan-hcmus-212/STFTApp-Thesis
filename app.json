@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "STFT-App",
-    "slug": "STFT-App",
+    "name": "Rescue App",
+    "slug": "rescue-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/rescue-app.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -17,13 +17,17 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.thesis.rescueapp",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/rescue-app.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.thesis.rescueapp",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"

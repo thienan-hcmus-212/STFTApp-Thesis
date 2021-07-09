@@ -3,7 +3,7 @@ import { app } from "../../globals/constants"
 
 
 const getWardIdRegistration=(auth) => new Promise((resolve,reject)=>{
-    //reject()
+    //resolve("26302")
     const axiosGetRegis = axiosWithToken(auth)
     axiosGetRegis.get(app.api.rescuer.getRegistration,{timeout: 3000}).then((result)=>{
         resolve(result.data.data.locationId)
@@ -45,7 +45,7 @@ const deleteRegistration = (auth,wardId) => new Promise((resolve,reject)=>{
 })
 
 const checkIsAccept = (auth) => new Promise((resolve,reject)=>{
-    //setTimeout(()=>resolve(true),1000)
+    //resolve(true)
 
     const axiosGetRegis= axiosWithToken(auth)
     axiosGetRegis.get(app.api.rescuer.getRegistration).then((result)=>{
