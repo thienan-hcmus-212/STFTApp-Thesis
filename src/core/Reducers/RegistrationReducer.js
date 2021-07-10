@@ -18,7 +18,8 @@ const initRegistration = {
         },
         status:{
             status:null,
-            error:null
+            error:null,
+            isLoading: false
         }
     }
 }
@@ -157,7 +158,8 @@ const RegistrationReducers = (state = initRegistration, action) => {
                     ...state.infoARegistration,
                     status: {
                         ...state.infoARegistration.status,
-                        error: action.error
+                        error: action.error,
+                        isLoading: false
                     }
                 }
             }
@@ -168,7 +170,19 @@ const RegistrationReducers = (state = initRegistration, action) => {
                     ...state.infoARegistration,
                     status: {
                         ...state.infoARegistration.status,
-                        status: action.status
+                        status: action.status,
+                        isLoading: false
+                    }
+                }
+            }
+        case actionsType.registration.startIsLoadingStatus:
+            return {
+                ...state,
+                infoARegistration:{
+                    ...state.infoARegistration,
+                    status:{
+                        ...state.infoARegistration.status,
+                        isLoading: true
                     }
                 }
             }

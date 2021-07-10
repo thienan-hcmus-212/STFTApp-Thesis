@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Text, Alert, Modal, TouchableOpacity } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Text, Alert, Modal, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { OutlinedTextField } from 'rn-material-ui-textfield'
 
 import { connect } from 'react-redux'
@@ -24,6 +24,8 @@ const InfoARegistration = (props) => {
     // const [item, setItem] = useState(null)
     // const [editable, setEditable] = useState(true)
 
+    const scrollRef = useRef()
+
     const navigation = useNavigation()
     const { auth, info } = props
     const { setNullError, setInfoOfItem, setInfoARegistration, setNullInfo, onPressPost, setNullErrorStatus } = props
@@ -33,6 +35,10 @@ const InfoARegistration = (props) => {
     const [isModalCheck, setIsModalCheck] = useState(false)
     const [list, setList] = useState()
     const [startItem, setStartItem] = useState(-1)
+    const [page,setPage] = useState({
+        current:0,
+        length:0
+    })
 
     const checkListImage = (result,auth)=>{
         const registrations = result["registrations"]
@@ -43,6 +49,10 @@ const InfoARegistration = (props) => {
                 ++count
             }
         });
+        setPage({
+            current:1,
+            length:arrayKey.length-count
+        })
         return (arrayKey.length>count)
     }
     const checkItem = (result,auth,id) =>{
@@ -59,8 +69,11 @@ const InfoARegistration = (props) => {
     }
 
     useEffect(() => {
-        const a= list?.registrations[startItem].__data__;
-        (startItem != -1) ? setSelectItem(list?.registrations[startItem].__data__) : null
+        if (startItem != -1){
+            setSelectItem(list?.registrations[startItem].__data__);
+            scrollRef?.current?.scrollTo({ x: 0, y: 0, animated: true });
+        }
+        
     }, [startItem])
 
     const onPressAdd = (item) => {
@@ -106,6 +119,10 @@ const InfoARegistration = (props) => {
     const onPressNot = () => {
         if (checkItem(list,auth,startItem+1)!=-1) {
             setStartItem(checkItem(list,auth,startItem+1))
+            setPage((p)=> p = {
+                current: p.current+1,
+                length: p.length
+            })
         } else {
             Alert.alert("Chú ý Đã hết", "Bạn muốn đăng kí ngay hay xem lại danh sách?", [
                 {
@@ -114,6 +131,10 @@ const InfoARegistration = (props) => {
                     onPress: () => {
                         setStartItem(checkItem(list,auth,0))
                         setSelectItem(list?.registrations[0].__data__)
+                        setPage((p)=> p = {
+                            current: 1,
+                            length: p.length
+                        })
                     }
                 }, {
                     text: 'đăng kí ngay',
@@ -215,19 +236,35 @@ const InfoARegistration = (props) => {
     return (
         <>
             <Modal
+                animationType='none'
+                visible={status.isLoading}
+            >
+                <View style={{justifyContent:'center', flex:1, alignItems: 'center'}}>
+                    <View style={styles.centeredView}>
+                        <ActivityIndicator size={90} color="blue" />
+                    </View>
+                </View>
+
+            </Modal>
+            <Modal
                 animationType="none"
                 transparent={true}
                 visible={isModalCheck}
             >
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        <Ionicons
-                            name="close"
-                            size={30}
-                            onPress={()=>setIsModalCheck(false)}
-                            style={{alignSelf:'flex-end',margin: 4}}
-                        ></Ionicons>
-                        <ScrollView>
+                        <View style={{justifyContent:'space-between', flexDirection:'row', padding: 12}}>
+                            <Ionicons
+                                name="close"
+                                size={30}
+                                onPress={()=>setIsModalCheck(false)}
+                                style={{alignSelf:'flex-end',margin: 4}}
+                            ></Ionicons>
+                            <Text>{page.current}/{page.length}</Text>
+                            
+                        </View>
+                       
+                        <ScrollView ref={(el) => scrollRef.current=el}>
                             <View style={styles.showInfo}>
                                 
                                 <AvatarPicker

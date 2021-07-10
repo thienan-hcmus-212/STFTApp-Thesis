@@ -128,7 +128,8 @@ const actionsType = {
         setLoadingListFalse: "REGISTRATION_setLoadingList_False",
         setNullInfo: "REGISTRATION_setNull_Info",
         setErrorStatus: "REGISTRATION_set_error_post_request",
-        setStatus: "REGISTRATION_set_status_post_request"
+        setStatus: "REGISTRATION_set_status_post_request",
+        startIsLoadingStatus:"REGISTRATION_set_start_is_loading"
     },
     rescue:{
         setUserLocation: "Rescue_set_user_location",

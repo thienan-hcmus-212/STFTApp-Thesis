@@ -208,7 +208,7 @@ const onPressPostRequest = (auth) => {
     return (dispatch, getState) => {
 
         const item = getState().registration.infoARegistration
-
+        dispatch({type: actionsType.registration.startIsLoadingStatus})
         const { errorNum, errorPhone, errorWardId } = checkInput(item)
         if (errorNum || errorPhone || errorWardId) {
             dispatch(setInfoARegistration(errorNum, actionsType.registration.setErrorNumPersion))
