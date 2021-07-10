@@ -11,7 +11,6 @@ const SetGPS = (props) => {
     const { navigation } = props
     const { longitude, latitude, setLatitude, setLongitude, editable, wardId, setWardId } = props
 
-
     const [initialRegion, setInitialRegion] = useState()
     const [fullScreenShowMap, setFullScreenShowMap] = useState(false)
 
@@ -23,7 +22,6 @@ const SetGPS = (props) => {
     }, [])
 
     const pickGPS = () => {
-
         navigation.navigate(app.navigation.ModalPickGPS, {
             longitude: longitude,
             latitude: latitude,
@@ -89,9 +87,15 @@ const SetGPS = (props) => {
                 <MapView
                     style={styles.map}
                     ref={mapRef}
+                    initialRegion={((longitude) && (latitude)) ? {
+                        latitude: latitude,
+                        longitude: longitude,
+                        latitudeDelta: 0.02,
+                        longitudeDelta: 0.02,
+                    } : null}
                 >
 
-                    {longitude && latitude ? (<Marker
+                    {((longitude != null) && (latitude != null)) ? (<Marker
                         key={0}
                         coordinate={{ longitude: longitude, latitude: latitude }}
                     ></Marker>) : null}

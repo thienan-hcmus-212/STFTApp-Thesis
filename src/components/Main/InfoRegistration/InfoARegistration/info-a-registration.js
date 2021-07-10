@@ -11,7 +11,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import AvatarPicker from '../../../Common/avatar-picker';
 import SetGPS from '../../../Common/set-gps';
-import { useFocusEffect } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { searchItemByImage } from '../../../../core/Service/image';
 import { deleteRegistration, followRegistration } from '../../../../core/Service/registration';
 import SelectLocation from '../../../Common/select-location';
@@ -24,7 +24,7 @@ const InfoARegistration = (props) => {
     // const [item, setItem] = useState(null)
     // const [editable, setEditable] = useState(true)
 
-    const { navigation } = props
+    const navigation = useNavigation()
     const { auth, info } = props
     const { setNullError, setInfoOfItem, setInfoARegistration, setNullInfo, onPressPost, setNullErrorStatus } = props
     const { name, numPerson, phone, image, error, longitude, latitude, wardId, status } = info
@@ -59,6 +59,7 @@ const InfoARegistration = (props) => {
     }
 
     useEffect(() => {
+        const a= list?.registrations[startItem].__data__;
         (startItem != -1) ? setSelectItem(list?.registrations[startItem].__data__) : null
     }, [startItem])
 
@@ -195,7 +196,8 @@ const InfoARegistration = (props) => {
     }, [navigation, info]);
 
     useEffect(() => {
-        (status.status == 200) ?
+        console.log(status);
+        (status?.status?.status == 200 || status?.status == 200) ?
             navigation.goBack() :
             null
     }, [status])
