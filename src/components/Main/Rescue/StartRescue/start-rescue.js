@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import { View, StyleSheet, Text, Alert, TouchableOpacity, Modal, ActivityIndicator } from 'react-native'
 import { getCurrentLocation, getNameLocation } from '../../../../core/Service/location'
@@ -12,6 +12,8 @@ import { setRescueUnit } from '../../../../core/Actions/RescueAction'
 
 const StartRescue = (props) => {
 
+    let checkRef = useRef()
+
     const { wardId } = props.route.params
     const { deleteWardId } = props.route.params //function
     const [nameLocation, setNameLocation] = useState(null)
@@ -24,15 +26,26 @@ const StartRescue = (props) => {
     const { navigation } = props
 
     useEffect(() => {
-
         const loca = getNameLocation(wardId)
         setNameLocation(loca)
         checkIsAccept(auth).then((result) => {
             setIsAccept(result)
         }).catch((error) => {
-            Alert.alert("Thông báo", `${error.message}`)
+            console.log(error)
         })
-    }, [])
+    }, [wardId,auth])
+
+    useEffect(()=>{
+        checkRef = setInterval(()=>{
+            checkIsAccept(auth).then((result) => {
+                setIsAccept(result)
+            }).catch((error) => {
+                console.log(error)
+            })
+        },3000)
+        return ()=>clearInterval(checkRef)
+    },[auth])
+
     const showNoti = isAccept ? "Bạn có thể xuất phát" : "Bạn cần phải được cho phép bởi chính quyền địa phương"
 
     const onPressAgreeDelete = (auth) => new Promise((resolve, reject) => {

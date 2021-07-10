@@ -7,7 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 const description = (order )=>{
     switch (order) {
         case 0:
-            return "Trường hợp khẩn cấp, có người bệnh"
+            return "Trường hợp khẩn cấp, cấp cứu người bệnh"
         case 1:
             return "Trường hợp có nhiều trẻ em"
         case 2:

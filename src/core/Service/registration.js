@@ -3,7 +3,6 @@ import { app } from '../../globals/constants'
 
 const getListRegistration = (auth) => new Promise((resolve, reject) => {
     const axiosGetList = axiosWithToken(auth)
-    
     axiosGetList.get(`${app.api.user.getRegistration}`).then((result) => {
         const data=result.data.data[0]
         const follow=result.data.data[1]
@@ -15,6 +14,7 @@ const getListRegistration = (auth) => new Promise((resolve, reject) => {
         })
         resolve(data)
     }).catch((error) => {
+        console.log(error.response)
         error.response ?
             reject(error.response) :
             reject({ status: 400, message: error.message })
@@ -53,4 +53,19 @@ const followRegistration = (auth,item)=> new Promise((res,rej)=>{
     })
 })
 
-export { getListRegistration , addItemToListRegistration, followRegistration}
+const deleteRegistration = (auth,item)=>new Promise((resolve,reject)=>{
+    const axiosDelete = axiosWithToken(auth)
+    axiosDelete.delete(`${app.api.user.getRegistration}`,{
+        params:{
+            registrationId: item.id
+        }
+    }).then((response)=>{
+        resolve()
+    }).catch((error)=>{
+        error.response?
+            reject(error.response.data):
+            reject({status: 400, message: error.message})
+    })
+})
+
+export { getListRegistration , addItemToListRegistration, followRegistration, deleteRegistration}

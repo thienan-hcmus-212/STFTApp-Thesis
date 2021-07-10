@@ -1,20 +1,20 @@
-import React, { useLayoutEffect, useState, useEffect, useCallback } from 'react'
-import { View, StyleSheet, Image, KeyboardAvoidingView, ScrollView, Text, Dimensions, Alert, Modal, TouchableOpacity } from 'react-native'
-import { OutlinedTextField, FilledTextField, TextField } from 'rn-material-ui-textfield'
+import React, { useState, useEffect } from 'react'
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Text, Alert, Modal, TouchableOpacity } from 'react-native'
+import { OutlinedTextField } from 'rn-material-ui-textfield'
 
 import { connect } from 'react-redux'
-import { setInfoARegistration, setInfoOfItem, setNullInfo, onPressPostRequest, setErrorStatus } from '../../../../core/Actions/RegistrationAction';
+import { setInfoARegistration, setInfoOfItem, setNullInfo, onPressPostRequest, setErrorStatus} from '../../../../core/Actions/RegistrationAction';
 import { actionsType, app } from '../../../../globals/constants';
 
-import MapView, { Marker } from 'react-native-maps';
+
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import AvatarPicker from '../../../Common/avatar-picker';
-import SelectLocation from '../../../Common/select-location';
 import SetGPS from '../../../Common/set-gps';
 import { useFocusEffect } from '@react-navigation/native'
 import { searchItemByImage } from '../../../../core/Service/image';
-import { followRegistration } from '../../../../core/Service/registration';
+import { deleteRegistration, followRegistration } from '../../../../core/Service/registration';
+import SelectLocation from '../../../Common/select-location';
 
 
 const InfoARegistration = (props) => {
@@ -34,13 +34,37 @@ const InfoARegistration = (props) => {
     const [list, setList] = useState()
     const [startItem, setStartItem] = useState(-1)
 
+    const checkListImage = (result,auth)=>{
+        const registrations = result["registrations"]
+        const arrayKey = Object.keys(registrations)
+        let count = 0;
+        arrayKey.map((key)=>{
+            if (registrations[key]["__data__"]["create_by_username"]==auth.username){
+                ++count
+            }
+        });
+        return (arrayKey.length>count)
+    }
+    const checkItem = (result,auth,id) =>{
+        const registrations = result["registrations"]
+        const arrayKey = Object.keys(registrations)
+        let start=id
+        while ((start<arrayKey.length) && (registrations[start]["__data__"]["create_by_username"]==auth.username)){
+            start=start+1
+        }
+        if (arrayKey.length<=start){
+            return -1
+        }
+        return start
+    }
+
     useEffect(() => {
         (startItem != -1) ? setSelectItem(list?.registrations[startItem].__data__) : null
     }, [startItem])
 
     const onPressAdd = (item) => {
 
-        Alert.alert("Chú ý", "Bạn sẽ chọn người gần giống người bạn muốn đăng kí. \n Nếu không có sẽ lập tức đăng kí", [
+        Alert.alert("Chú ý", "Bạn sẽ chọn người gần giống người bạn muốn đăng kí.", [
             {
                 text: 'hủy',
                 style: 'cancel'
@@ -51,33 +75,43 @@ const InfoARegistration = (props) => {
                 onPress: () => {
                     searchItemByImage(auth, item).then((result) => {
                         setList(result)
-                        if (Object.keys(result.registrations).length > 0){
-                            setStartItem(0)
+                        if (checkListImage(result,auth)) {
+                            setStartItem(checkItem(result,auth,0))
                             setIsModalCheck(true)
                         } else {
-                            registerNow()
+                            Alert.alert("Thông báo", "Chưa có người bạn muốn đăng kí trong danh sách của chúng tôi.", [
+                                {
+                                    text: 'Đăng kí sau',
+                                    style: 'cancel'
+                                },
+                                {
+                                    text: 'Đăng kí ngay',
+                                    style: 'destructive',
+                                    onPress: () => registerNow()
+                                }
+                            ])
                         }
-                    }).catch((error)=>{
-                        Alert.alert("Lỗi",`${error.message}`)
+                    }).catch((error) => {
+                        Alert.alert("Lỗi", `${error.message}`)
                     })
                 }
             }
         ])
     }
 
-    const registerNow =()=>{
+    const registerNow = () => {
         onPressPost(auth)
     }
     const onPressNot = () => {
-        if (list.registrations[startItem + 1]) {
-            setStartItem(startItem + 1)
+        if (checkItem(list,auth,startItem+1)!=-1) {
+            setStartItem(checkItem(list,auth,startItem+1))
         } else {
             Alert.alert("Chú ý Đã hết", "Bạn muốn đăng kí ngay hay xem lại danh sách?", [
                 {
                     text: 'xem lại danh sách',
                     style: 'cancel',
                     onPress: () => {
-                        setStartItem(0)
+                        setStartItem(checkItem(list,auth,0))
                         setSelectItem(list?.registrations[0].__data__)
                     }
                 }, {
@@ -94,12 +128,12 @@ const InfoARegistration = (props) => {
     }
     const onPressOk = (item) => {
         setIsModalCheck(false)
-        followRegistration(auth,item).then(()=>{
+        followRegistration(auth, item).then(() => {
             navigation.navigate(app.navigation.InfoRegistrationList)
-        }).catch((error)=>{
+        }).catch((error) => {
             Alert.alert("Lỗi", `${error.message}`)
         })
-        
+
     }
 
     useEffect(() => {
@@ -122,23 +156,42 @@ const InfoARegistration = (props) => {
     )
 
 
+    const onPressDelete = (item)=>{
+        Alert.alert("Lưu ý", "Bạn muốn xóa đăng kí này",[
+            {
+                text:'Không',
+                style:'cancel'
+            },
+            {
+                text:'Ok',
+                style:"destructive",
+                onPress:()=>{
+                    deleteRegistration(auth,item).then(()=>{
+                        navigation.goBack()
+                    }).catch((error)=>{
+                        Alert.alert("Lỗi", `${error.message}`)
+                    })
+                }
+            }
+        ])
+
+    }
 
     React.useLayoutEffect(() => {
-        (editable) ? navigation.setOptions({
+        navigation.setOptions({
             headerRight: () => (
                 <TouchableOpacity
-                    style={{ borderRadius: 100, backgroundColor: 'red' }}
-                    onPress={() => onPressAdd(info)}
+                    style={{ borderRadius: 100, backgroundColor: editable?'#CAFF00':"white", marginRight: 20, padding: 3 }}
+                    onPress={() => editable?onPressAdd(info):onPressDelete(item)}
                 >
                     <Ionicons
-                        name="checkmark"
+                        name={editable?"checkmark":"trash-bin"}
                         size={40}
-                        color="#fff"
+                        color="#000"
                     />
-
                 </TouchableOpacity>
             ),
-        }) : null
+        })
     }, [navigation, info]);
 
     useEffect(() => {
@@ -166,41 +219,57 @@ const InfoARegistration = (props) => {
             >
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
+                        <Ionicons
+                            name="close"
+                            size={30}
+                            onPress={()=>setIsModalCheck(false)}
+                            style={{alignSelf:'flex-end',margin: 4}}
+                        ></Ionicons>
                         <ScrollView>
-                            <AvatarPicker
-                                editable={false}
-                                image={app.apiImage.root + list?.url_list[startItem]}
-                                //setImage={(uri) => setInfoARegistration(uri, actionsType.registration.setImage)}
-                            />
-                            <View style={{ width: '70%' }}>
-                                <View style={{ flexDirection: 'row' }}>
-                                    <View style={{ flex: 5, marginRight: 9 }}>
-                                        <OutlinedTextField
-                                            label="Tên người thân"
-                                            editable={false}
-                                            value={selectItem?.name}
-                                        />
+                            <View style={styles.showInfo}>
+                                
+                                <AvatarPicker
+                                    style={{alignSelf: 'center'}}
+                                    editable={false}
+                                    image={(list?.url_list[startItem]!="")?app.apiImage.root + list?.url_list[startItem]:null}
+                                />
+                                <View style={{ width: '100%', marginTop: 20, padding: 12}}>
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <View style={{ flex: 5, marginRight: 9 }}>
+                                            <OutlinedTextField
+                                                label="Tên người thân"
+                                                editable={false}
+                                                value={selectItem?.name}
+                                            />
+                                        </View>
+                                        <View style={{ flex: 3 }}>
+                                            <OutlinedTextField
+                                                label="Số"
+                                                editable={false}
+                                                value={selectItem ? selectItem.num_person.toString() : '0'}
+                                            />
+                                        </View>
                                     </View>
-                                    <View style={{ flex: 3 }}>
-                                        <OutlinedTextField
-                                            label="Số"
-                                            editable={false}
-                                            value={selectItem?selectItem.num_person.toString():'0'}
-                                        />
-                                    </View>
+
+                                    <SelectLocation
+                                        wardId={selectItem?.ward_id}
+                                        editable={false}
+                                    />
+
+                                    <SetGPS
+                                        longitude={selectItem?.longitude}
+                                        latitude={selectItem?.latitude}
+                                        editable={false}
+                                        wardId={wardId}
+                                        navigation={navigation}
+                                        setLongitude={(t) => setInfoARegistration(t, actionsType.registration.setLongitude)}
+                                        setLatitude={(t) => setInfoARegistration(t, actionsType.registration.setLatitude)}
+                                        setWardId={(t) => setInfoARegistration(t, actionsType.registration.setWardId)}
+                                    />
                                 </View>
 
-                                <SetGPS
-                                    longitude={selectItem?.longitude}
-                                    latitude={selectItem?.latitude}
-                                    editable={false}
-                                    wardId={wardId}
-                                    navigation={navigation}
-                                    setLongitude={(t) => setInfoARegistration(t, actionsType.registration.setLongitude)}
-                                    setLatitude={(t) => setInfoARegistration(t, actionsType.registration.setLatitude)}
-                                    setWardId={(t) => setInfoARegistration(t,actionsType.registration.setWardId)}
-                                />
                             </View>
+
                         </ScrollView>
                     </View>
                     <View style={styles.interact}>
@@ -243,7 +312,7 @@ const InfoARegistration = (props) => {
                                 <OutlinedTextField
                                     label="Số người"
                                     editable={editable}
-                                    value={numPerson?numPerson.toString():'0'}
+                                    value={numPerson ? numPerson.toString() : '0'}
                                     error={error.numPerson}
                                     keyboardType='phone-pad'
                                     onChangeText={(t) => setInfoARegistration(t, actionsType.registration.setNumPerson)}
@@ -261,7 +330,7 @@ const InfoARegistration = (props) => {
                             onFocus={() => setInfoARegistration(null, actionsType.registration.setErrorPhone)}
                         ></OutlinedTextField>
 
-                        
+
 
                         <SetGPS
                             longitude={longitude}
@@ -293,22 +362,24 @@ const styles = StyleSheet.create({
         padding: 20
 
     },
+    showInfo: {
+        flex: 1,
+        margin: 12
+    },
     map: {
         //width: Dimensions.get('window').width,
         height: 270,
     },
     centeredView: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
         margin: 12,
     },
     modalView: {
         margin: 12,
         backgroundColor: "white",
         borderRadius: 20,
-        padding: 12,
-        alignItems: "center",
         // shadowColor: "#000",
         // shadowOffset: {
         //     width: 0,
@@ -318,7 +389,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
         width: '90%',
-        flex: 7
+        flex: 8
     },
     interact: {
         flexDirection: 'row',

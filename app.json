@@ -22,7 +22,12 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.hcmus.thesis.rescueapp",
-      "versionCode": 1
+      "versionCode": 1,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAclRkaJVqpGyngR3WevrMTdzH4Ptp6huc"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, StyleSheet, TouchableOpacity, Text, Alert, Modal, ActivityIndicator } from 'react-native'
+import { View, StyleSheet, TouchableOpacity, Text, Alert, Modal, ActivityIndicator, ScrollView } from 'react-native'
 
 import SelectLocation from '../../../Common/select-location';
 import LogoApp from '../../../Common/logo-app'
@@ -10,28 +10,28 @@ import { getNameLocation } from '../../../../core/Service/location';
 import { registerWardId } from '../../../../core/Service/rescueRegistration';
 
 const RegisterLocation = (props) => {
-    
+
     const { auth } = props
     const { setFinalWardId } = props.route.params
     const [wardId, setWardId] = useState()
     const [errorWardId, setErrorWardId] = useState(null)
 
-    const [isModalLoading,setIsModalLoading]= useState(false)
+    const [isModalLoading, setIsModalLoading] = useState(false)
 
     const location = (wardId) => {
         const { tinh, huyen, xa } = getNameLocation(wardId)
         return xa + ", " + huyen + ", " + tinh
     }
 
-    const onPressAgreeRegister = (auth)=> new Promise((resolve,reject)=>{
+    const onPressAgreeRegister = (auth) => new Promise((resolve, reject) => {
         setIsModalLoading(true)
-        registerWardId(auth,wardId).then((result)=>{
+        registerWardId(auth, wardId).then((result) => {
             resolve(result)
             setIsModalLoading(false)
-            
-        }).catch((error)=>{
+
+        }).catch((error) => {
             reject(error)
-            
+
             setIsModalLoading(false)
         })
     })
@@ -40,7 +40,7 @@ const RegisterLocation = (props) => {
         if (!wardId) setErrorWardId("hãy chọn địa điểm để đăng ký")
         else {
             const loca = location(wardId)
-            Alert.alert("Xác nhận",`Bạn đăng kí địa điểm ${loca}`,[
+            Alert.alert("Xác nhận", `Bạn đăng kí địa điểm ${loca}`, [
                 {
                     text: "Hủy",
                     style: "cancel"
@@ -48,15 +48,15 @@ const RegisterLocation = (props) => {
                 {
                     text: "Đồng ý",
                     onPress: () => {
-                        onPressAgreeRegister(auth).then(()=>{
+                        onPressAgreeRegister(auth).then(() => {
                             setFinalWardId(wardId)
-                        }).catch((error)=>{
-                            Alert.alert("Thông báo",`${error.message}`)
-                        })                     
+                        }).catch((error) => {
+                            Alert.alert("Thông báo", `${error.message}`)
+                        })
                     }
                 }
             ])
-        } 
+        }
     }
 
     return (
@@ -76,26 +76,33 @@ const RegisterLocation = (props) => {
                     </View>
                 </View>
             </Modal>
-            <View style={{ height: 200, justifyContent: 'center' }}>
-                <LogoApp size={120} textSize={24} />
-            </View>
-            <View style={{ width: '90%' }}>
-                <SelectLocation
-                    wardId={wardId}
-                    editable={true}
-                    setWardId={(t) => setWardId(t)}
-                    error={errorWardId}
-                    onFocus={() => setErrorWardId(null)}
-                ></SelectLocation>
-                <TouchableOpacity
-                    style={{ ...stylesMain.button, backgroundColor: 'aqua', marginTop: 20, alignSelf: 'center' }}
-                    onPress={() => {
-                        onPressRegister(auth);
-                    }}
-                >
-                    <Text>Đăng kí</Text>
-                </TouchableOpacity>
-            </View>
+            <ScrollView>
+                <View style={{ height: 200, justifyContent: 'center', alignSelf:'center' }}>
+                    <LogoApp size={120} textSize={24} />
+                </View>
+
+                <View style={{ width: '90%', alignSelf:'center' }}>
+                    <SelectLocation
+                        wardId={wardId}
+                        editable={true}
+                        setWardId={(t) => setWardId(t)}
+                        error={errorWardId}
+                        onFocus={() => setErrorWardId(null)}
+                    ></SelectLocation>
+                   
+                    <TouchableOpacity
+                        style={{ ...stylesMain.button, backgroundColor: 'aqua', marginTop: 20, alignSelf: 'center', marginBottom: 40 }}
+                        onPress={() => {
+                            onPressRegister(auth);
+                        }}
+                    >
+                        <Text>Đăng kí</Text>
+                    </TouchableOpacity>
+                </View>
+
+
+            </ScrollView>
+
         </View>
 
     )
@@ -105,14 +112,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
-        alignItems: 'center'
     },
-    centeredView:{
+    centeredView: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
     },
-    modalView:{
+    modalView: {
         //backgroundColor: "white",
         borderRadius: 100,
         alignItems: "flex-start",

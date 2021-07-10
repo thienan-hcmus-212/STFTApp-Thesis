@@ -6,7 +6,7 @@ import {servicePickImage,serviceTakePicture} from '../../core/Service/picture'
 
 const AvatarPicker = (props) => {
 
-    const { editable, image, setImage } = props
+    const { editable, image, setImage ,style } = props
     const actionSheetRef = useRef()
 
     const pickImage = () => {
@@ -29,7 +29,7 @@ const AvatarPicker = (props) => {
 
     return (
         <>
-            <View style={styles.container}>
+            <View style={[styles.container,style]}>
                 {image ?
                     <Image
                         source={{
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
         height: 120,
         width: 120,
         margin: 12,
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
     },
     image: {
         height: 120,

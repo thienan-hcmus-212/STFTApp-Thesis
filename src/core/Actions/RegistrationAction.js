@@ -145,6 +145,7 @@ const fetchingRegistrationList = (auth) => {
                 stringId = stringId + item.id +'.'
             })
             stringId=stringId.slice(0,stringId.length-1)
+
             getListImage(auth,stringId).then((listImage)=>{
                 const newResult = result.map((item)=>{
                     return {
@@ -152,6 +153,7 @@ const fetchingRegistrationList = (auth) => {
                         image: listImage[item.id]?(app.apiImage.root + listImage[item.id]):null
                     }
                 })
+
                 dispatch(setList(newResult))
                 dispatch(finishFetchingRegistrationList())
             

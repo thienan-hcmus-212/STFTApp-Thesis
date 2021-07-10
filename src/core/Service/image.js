@@ -4,16 +4,21 @@ import FormData from "form-data"
 import axios from "axios"
 
 const getListImage = (auth,stringId) => new Promise((resolve,reject)=>{
-    const axiosGetImage = axiosImage(auth)
-    axiosGetImage.get(`${app.apiImage.user.getListImage}${stringId}`)
-        .then((result)=>{
-            const data=result.data[0]["regidId-url"]
-            resolve(data)
-        }).catch((error)=>{
-            error.response?
-                reject(error.response.data):
-                reject({status:400, message: error})
-        })
+    if (stringId.length<1){
+        resolve({})
+    } else {
+        const axiosGetImage = axiosImage(auth)
+        axiosGetImage.get(`${app.apiImage.user.getListImage}${stringId}`)
+            .then((result)=>{
+                const data=result.data[0]["regidId-url"]
+                resolve(data)
+            }).catch((error)=>{
+                error.response?
+                    reject(error.response.data):
+                    reject({status:400, message: error})
+            })
+    }
+    
 })
 
 const list = {
@@ -99,7 +104,6 @@ const list = {
 
 const checkOnlyItem = (result,auth)=>{
     const registrations = result.data[0]["registrations"]
-    console.log(result.data[0])
     const arrayKey = Object.keys(registrations)
     arrayKey.map((key)=>{
         if (registrations[key]["__data__"]["create_by_username"]==auth.username){
@@ -136,6 +140,9 @@ const searchItemByImage=(auth,item)=>new Promise((resolve,reject)=>{
     const axiosGetListImage = axiosImage(auth)
     const stringId = item.name+";"+item.longitude+';'+item.latitude+';'+item.numPerson+';'+item.wardId+';'+item.phone;
     (item.name && item.latitude && item.longitude && item.numPerson && item.wardId && item.phone )?null:reject({message: "bạn chưa nhập hết các trường bên dưới"})
+    
+    // const stringId = "Nguyễn Hiền;108.682001;72.76130001;2;00571;123456"
+    
     if (item.image){
         const uri = item.image
         const nameImage = uri.split("/").pop()
@@ -149,7 +156,7 @@ const searchItemByImage=(auth,item)=>new Promise((resolve,reject)=>{
         })
 
         axiosGetListImage.post(`${app.apiImage.user.searchImage}image/${stringId}`,data).then((result)=>{
-            const data = checkOnlyItem(result,auth)
+            const data = result.data[0]
             resolve(data)
         }).catch((error)=>{
             error.response?
@@ -160,7 +167,7 @@ const searchItemByImage=(auth,item)=>new Promise((resolve,reject)=>{
     } else {
 
         axiosGetListImage.post(`${app.apiImage.user.searchImage}noImage/${stringId}`).then((result)=>{
-            const data = checkOnlyItem(result,auth)
+            const data = result.data[0]
             resolve(data)
         }).catch((error)=>{
             error.response?

@@ -52,23 +52,24 @@ const ShowUserInfo = (props) => {
         <View style={styles.container}>
             <View style={styles.showInfo}>
                 <View style={styles.baseInfo}>
-                    <Image
-                        source={require('../../../../../assets/avatar-none.png')}
-                        style={[styles.image, { margin: 0 }]}
-                    />
+                    <View style={styles.titles}>
+                        <Text>Tên đăng nhập: </Text>
+                        <Text>Họ: </Text>
+                        <Text>Tên: </Text>
+                        <Text>Số điện thoại: </Text>
+                        <Text>Email: </Text>
+                    </View>
                     <View style={styles.info}>
-                        <Text>Tên đăng nhâp: {username}</Text>
-                        <Text>Họ: {firstname}</Text>
-                        <Text>Tên: {lastname}</Text>
-                        <Text>Số điện thoại: {phone}</Text>
-                        <Text>Email: {email}</Text>
+                        <Text>{username}</Text>
+                        <Text>{firstname}</Text>
+                        <Text>{lastname}</Text>
+                        <Text>{phone}</Text>
+                        <Text>{email}</Text>
                     </View>
                 </View>
                 <View style={styles.role}>
                     <ShowRoleUser role={roles}></ShowRoleUser>
                 </View>
-
-
             </View>
             <View style={styles.feature}>
                 <TouchableOpacity style={[styles.button,{backgroundColor:'white'}]}
@@ -93,41 +94,45 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start'
     },
     showInfo: {
-        flex: 4,
+        flex: 5,
         width: '100%',
-        paddingHorizontal: 20,
-        paddingVertical: 36,
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         borderBottomLeftRadius: 50,
         borderBottomRightRadius: 50,
-        borderWidth: 2
+        borderWidth: 2,
+        alignItems: 'center'
     },
     feature: {
-        flex: 6,
+        flex: 5,
         width: '100%',
         padding: 20,
         justifyContent: 'flex-start',
         alignItems: 'center'
-
     },
     image: {
         height: 120,
         width: 120,
         borderRadius: 20
     },
+    titles:{
+        alignItems: 'flex-end',
+    },
     info: {
-        backgroundColor: 'white',
-        marginLeft: 12,
+        marginLeft: 9,
         justifyContent: 'flex-start',
-        padding: 20,
-        borderRadius: 20,
+        alignItems: 'flex-start',
     },
     baseInfo: {
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        width: '90%',
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 27
     },
     role: {
         padding: 20,
+        width:"90%"
     },
     button: {
         justifyContent: 'center',

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { connect } from 'react-redux'
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Keyboard } from 'react-native'
 
 import InputText from '../../../Common/input-text';
 import LogoApp from '../../../Common/logo-app';
@@ -55,7 +55,10 @@ const LoginContainer = (props) => {
             <Text style={styles.error_text}>{error?.message}</Text>
             <TouchableOpacity
                 style={{ ...stylesMain.button, backgroundColor: 'aqua', marginTop: 12 }}
-                onPress={() => onPressLogin(login)}
+                onPress={() => {
+                    Keyboard.dismiss
+                    onPressLogin(login)
+                }}
             >
                 <Text>Đăng nhập</Text>
             </TouchableOpacity>

@@ -1,9 +1,8 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Alert, TouchableOpacity, Dimensions } from 'react-native'
 import { connect } from 'react-redux'
 import { getListFlood } from '../../../../core/Service/satistic'
 import MapView, { Marker } from 'react-native-maps';
-import { getCenter } from 'geolib';
 import { getNameLocation } from '../../../../core/Service/location';
 import { searchCenterLocation } from '../../../../core/Service/search-location';
 import { useNavigation } from '@react-navigation/native';
@@ -54,7 +53,7 @@ const ListFlood = (props) => {
         navigation.setOptions({
             headerRight: () => (
                 <TouchableOpacity
-                    style={{ borderRadius: 100, backgroundColor: 'black', justifyContent: 'center', alignItems: 'center', marginRight: 12, padding: 2 }}
+                    style={{ borderRadius: 100, justifyContent: 'center', alignItems: 'center', marginRight: 12, padding: 2 }}
                     onPress={() => {
                         setFloodLocation([])
                         getLocationFlood(auth)
@@ -74,7 +73,7 @@ const ListFlood = (props) => {
     return (
         <View style={styles.container}>
             <MapView
-                style={{ flex: 1 }}
+                style={styles.map}
                 initialRegion={regionVN}
                 ref={mapRef}
             >
@@ -93,7 +92,6 @@ const ListFlood = (props) => {
                         )
                     })
                     : null}
-
             </MapView>
         </View>
     )
@@ -102,6 +100,12 @@ const ListFlood = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    map:{
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
     }
 })
 

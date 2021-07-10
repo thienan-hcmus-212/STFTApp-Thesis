@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
 import ListFlood from '../ListFlood/list-flood'
-import { app } from '../../../../globals/constants'
+import { app, headersStyle, stylesMain } from '../../../../globals/constants'
 
 const MainSatisticNavigator = createStackNavigator()
 
@@ -14,13 +14,7 @@ const Satistic = ()=>{
                 name={app.navigation.ListFlood}
                 options={{
                     title: 'Những xã đang xảy ra lũ',
-                    headerStyle: {
-                        backgroundColor: 'aqua',
-                    },
-                    headerTintColor: '#000',
-                    headerTitleStyle: {
-                        fontWeight: 'bold',
-                    },
+                    ...headersStyle
                 }}
             />
         </MainSatisticNavigator.Navigator>

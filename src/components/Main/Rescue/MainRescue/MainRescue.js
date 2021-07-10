@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useLayoutEffect } from 'react'
+import React, { useEffect, useState, useLayoutEffect, useCallback } from 'react'
 import { StyleSheet, View, ActivityIndicator } from 'react-native'
 
 import { createStackNavigator } from '@react-navigation/stack'
-import { app } from '../../../../globals/constants'
+import { app, headersStyle } from '../../../../globals/constants'
 import RegisterLocation from '../Registration/registrationLocation'
 import StartRescue from '../StartRescue/start-rescue'
 import { getWardIdRegistration } from '../../../../core/Service/rescueRegistration'
@@ -13,20 +13,21 @@ const MainRescueNavigationStack = createStackNavigator()
 
 const MainRescue = (props) => {
 
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
     const [wardId, setWardId] = useState(null)
 
     const { navigation } = props
     const { auth } = props
-    
-    useLayoutEffect(() => {
-        getWardIdRegistration(auth).then((wardId) => {
-            setWardId(wardId)
-            setIsLoading(false)
+
+    useEffect(()=>{
+        setIsLoading((isLoading) => isLoading = true)
+        getWardIdRegistration(auth).then((wId) => {
+            setWardId((wardId)=>wardId=wId)
+            setIsLoading((isLoading) => isLoading = false)
         }).catch(() => {
-            setIsLoading(false)
+            setIsLoading((isLoading) => isLoading = false)
         })
-    }, [])
+    },[auth])
 
     const setFinalWardId = (wardId) => {
         setWardId(wardId)
@@ -53,13 +54,7 @@ const MainRescue = (props) => {
                             name={app.navigation.RescueRegistration}
                             options={{
                                 title: 'Đăng kí Địa điểm cứu hộ',
-                                headerStyle: {
-                                    backgroundColor: 'aqua',
-                                },
-                                headerTintColor: '#000',
-                                headerTitleStyle: {
-                                    fontWeight: 'bold',
-                                },
+                                ...headersStyle
                             }}
                             initialParams={{ setFinalWardId: (wardId) => setFinalWardId(wardId) }}
                         />
@@ -71,13 +66,7 @@ const MainRescue = (props) => {
                             name={app.navigation.RescueStartRescue}
                             options={{
                                 title: 'Bắt đầu xuất phát',
-                                headerStyle: {
-                                    backgroundColor: 'aqua',
-                                },
-                                headerTintColor: '#000',
-                                headerTitleStyle: {
-                                    fontWeight: 'bold',
-                                },
+                                ...headersStyle
                             }}
                             initialParams={{deleteWardId:()=>deleteWardId(), wardId: wardId }}
                         />

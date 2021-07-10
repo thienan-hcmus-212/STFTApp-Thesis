@@ -24,7 +24,7 @@ const ListRegistration = (props) => {
                     <Ionicons
                         name="add-circle-outline"
                         size={40}
-                        color="#000"
+                        color="#fff"
                     />
                 </TouchableOpacity>
 
@@ -32,13 +32,10 @@ const ListRegistration = (props) => {
         });
     }, [navigation]);
 
-    useEffect(() => {
-        fetchList(auth)
-    }, [])
     useFocusEffect(
         useCallback(()=>{
             fetchList(auth)
-        },[])
+        },[auth])
     )
 
     useEffect(() => {
@@ -46,7 +43,7 @@ const ListRegistration = (props) => {
             setNullStatus()
             fetchList(auth)
         }
-    }, [status])
+    }, [status,auth])
 
     const addtoList = () => {
         setModalShowSelectAdd(false)
@@ -62,7 +59,6 @@ const ListRegistration = (props) => {
         return (
             <ItemListRegistration
                 item={item}
-                deleteItem={() => deleteItem(item)}
                 onPress={() => navigation.navigate(app.navigation.InfoRegistrationItemInfo, { editable: false, item: item })}
             />
         )
@@ -173,7 +169,6 @@ const mapStateToProps = (state) => {
 
 const mapFuncToProps = (dispatch) => {
     return {
-        deleteItem: (item) => dispatch(deleteItemList(item)),
         fetchList: (auth) => dispatch(fetchingRegistrationList(auth)),
         setNullStatus: () => dispatch(setStatus(null)),
         setNullErrorStatus: () => dispatch(setErrorStatus(null))

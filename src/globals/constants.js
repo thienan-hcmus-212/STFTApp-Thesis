@@ -189,7 +189,16 @@ const stylesMain = StyleSheet.create({
         borderRadius: 5,
         height:36,
         margin:4
-    }
+    },
 })
+const headersStyle = {
+    headerStyle: {
+        backgroundColor: 'blue',
+    },
+    headerTintColor: '#fff',
+    headerTitleStyle: {
+        fontWeight: 'bold',
+    },
+}
 
-export { app , actionsType , stylesMain , regexTypes }
+export { app , actionsType , stylesMain , regexTypes, headersStyle }

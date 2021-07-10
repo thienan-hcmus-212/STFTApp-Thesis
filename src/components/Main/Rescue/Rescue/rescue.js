@@ -65,7 +65,7 @@ const Rescue = (props) => {
     useEffect(() => {
         markerRef.current=[]
         fetchDataAndSetListVictim(auth)
-    }, [])
+    }, [auth])
 
 
     useEffect(()=>{
@@ -78,7 +78,7 @@ const Rescue = (props) => {
             
         }
 
-    },[isGo])
+    },[isGo,auth])
     
     //get user current location
     useEffect(() => {
@@ -107,7 +107,7 @@ const Rescue = (props) => {
     //send location 
     useEffect(() => {
         userLocation?sendLocation(userLocation, auth):null
-    }, [userLocation])
+    }, [userLocation,auth])
 
     
     // refresh when destination list = 0
@@ -124,7 +124,7 @@ const Rescue = (props) => {
     //check connect to intenet
     useEffect(()=>{
         (netInfo.isConnected)?sendJourneyToServer(auth):null
-    },[netInfo])
+    },[netInfo,auth])
 
     //get a destination
     useEffect(() => {
@@ -153,7 +153,7 @@ const Rescue = (props) => {
                 ])
             }
         }
-    }, [userLocation])
+    }, [userLocation,auth])
 
 
     //config back button
@@ -182,7 +182,7 @@ const Rescue = (props) => {
                 }
             ])
         })
-    }, [navigation])
+    }, [navigation,auth])
 
     useEffect(()=>{
         selectItem && setIsShowInfoItem(true)

@@ -2,7 +2,7 @@ import React from 'react'
 import { StyleSheet, Text } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack';
 import ListRegistration from '../ListRegistration/list-registration'
-import { app } from '../../../../globals/constants'
+import { app, headersStyle } from '../../../../globals/constants'
 import infoARegistration from '../InfoARegistration/info-a-registration';
 
 
@@ -19,13 +19,7 @@ const InfoRegistration = () => {
                 name={app.navigation.InfoRegistrationList}
                 options={{
                     title: 'Danh Sách đăng kí',
-                    headerStyle: {
-                        backgroundColor: 'aqua',
-                    },
-                    headerTintColor: '#000',
-                    headerTitleStyle: {
-                        fontWeight: 'bold',
-                    },
+                    ...headersStyle
                 }}
             />
             <MainRegistrationNavigator.Screen
@@ -33,13 +27,7 @@ const InfoRegistration = () => {
                 name={app.navigation.InfoRegistrationItemInfo}
                 options={{
                     title:'Thông tin đăng kí',
-                    headerStyle: {
-                        backgroundColor: 'aqua',
-                    },
-                    headerTintColor: '#000',
-                    headerTitleStyle: {
-                        fontWeight: 'bold',
-                    },
+                    ...headersStyle
                 }}
             />
         </MainRegistrationNavigator.Navigator>

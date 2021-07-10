@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack';
 import ShowUserInfo from '../ShowInfo/show-user-info';
-import { app } from '../../../../globals/constants';
+import { app, headersStyle } from '../../../../globals/constants';
 import EditInformation from '../Edit/edit-infomation';
 
 const MainUserInfoStack = createStackNavigator()
@@ -14,13 +14,7 @@ const UserInformation = ()=>{
                 name={app.navigation.ShowInfomationUser}
                 options={{
                     title: 'Thông tin cá nhân',
-                    headerStyle: {
-                        backgroundColor: 'aqua',
-                    },
-                    headerTintColor: '#000',
-                    headerTitleStyle: {
-                        fontWeight: 'bold',
-                    },
+                    ...headersStyle
                 }}
             />
             <MainUserInfoStack.Screen
@@ -28,13 +22,7 @@ const UserInformation = ()=>{
                 name={app.navigation.EditInformation}
                 options={{
                     title: 'Thây đổi thông tin cá nhân',
-                    headerStyle: {
-                        backgroundColor: 'aqua',
-                    },
-                    headerTintColor: '#000',
-                    headerTitleStyle: {
-                        fontWeight: 'bold',
-                    },
+                    ...headersStyle
                 }}
             />
         </MainUserInfoStack.Navigator>

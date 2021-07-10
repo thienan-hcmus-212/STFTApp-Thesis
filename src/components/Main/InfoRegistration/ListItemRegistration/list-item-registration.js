@@ -1,26 +1,16 @@
 import React from 'react'
-import { View, StyleSheet, Text, Image, Pressable, Alert } from 'react-native'
+import { View, StyleSheet, Text, Image, Pressable, Alert ,TouchableOpacity } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import {getNameLocation} from '../../../../core/Service/location'
 const sizeIcon = 22
 const ItemListRegistration = (props) => {
     const item = props.item
-    const { deleteItem, onPress } = props
+    const { onPress } = props
     const location = getNameLocation(item.ward?.id)
     return (
         <Pressable
             style={({ pressed }) => [{ backgroundColor: pressed ? '#C8C8C8' : 'white' }, styles.container]}
-            onLongPress={() => Alert.alert("Notification", "Do you want to delete this registration?", [
-                {
-                    text: "Ok",
-                    onPress: () => deleteItem(),
-                },
-                {
-                    text: "Cancel",
-                    style: "cancel"
-                }
-            ])}
             onPress={()=> onPress()}
         >
             <View style={styles.container_info}>
